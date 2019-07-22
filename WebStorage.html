@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        sessionStorage.setItem('name', 'ycn');
+        sessionStorage.setItem('age', 18);
+        sessionStorage.setItem('skills', JSON.stringify({
+            web: {
+                base: ['html', 'css', 'js'],
+                back: 'nodejs',
+                time: 2
+            },
+            guitar: 'guitar'
+        }));
+
+        //1 实现增删改查  session storage 和 local storage 
+        //2 实现 all 方法
+        //3 实现 has 方法
+
+        window.addEventListener('storage', (e) => {
+            console.log(e)
+        })
+
+        class WebStorage {
+            constructor (type = 'sessionStorage') {
+                this.state = Object.create(this)
+                this.type = type
+                switch (type) {
+                    case 'sessionStorage' || 'localStorage' : {
+                        this.init(window[this.type])
+                        return this.proxy(this.state)
+                    }
+                    case 'cookie' : {
+                        console.log('cookie')
+                        break;
+                    }
+                    case 'indexDB' : {
+                        console.log('indexDB')
+                        break;
+                    }
+                }
+            }
+            init (storage) {
+                Object.keys(storage).forEach((item) => {
+                    try {
+                        this.state[item] = JSON.parse(storage[item])
+                    } catch (e) {
+                        this.state[item] = storage[item]
+                    }
+                })
+            }
+            proxy (state) {
+                const that = this
+                const proxy = new Proxy(state, {
+                    get (target, key) {
+                        return target[key]
+                    },
+                    set(target, key, value) {
+                        if (typeof value === 'object') {
+                            target[key] = that.proxy(value)
+                        } else {
+                            target[key] = value
+                        }
+                        that.updata(target, key, value)   
+                    }
+                })
+                Object.keys(state).forEach(item => {
+                    if (typeof state[item] === 'object') {
+                        state[item] = this.proxy(state[item])
+                    }
+                })
+                return proxy
+            }
+            updata (key, value) {
+                Object.keys(this.state).forEach(key => {
+                    const value = this.state[key]
+                    if (typeof value === 'object') {
+                        window[this.type].setItem(key, JSON.stringify(value))
+                    } else {
+                        window[this.type].setItem(key, value)                  
+                    }
+                })
+            }
+            all () {
+                return JSON.parse(JSON.stringify(this.state))
+            }
+            has () {
+                let obj = this.state
+                for (let i = 0; i < arguments.length; i ++) {
+                    if (arguments[i] in obj) {
+                        obj = obj[arguments[i]]
+                    } else {
+                        return false
+                    }
+                }
+                return true
+            }
+        }
+
+        const webstorage = new WebStorage();
+
+        console.log(webstorage)
+        
+    </script>
+</body>
+</html>
