@@ -11,17 +11,16 @@ const FormatName = {
     format: 'umd', 
     name: 'WebStorageProxy'
 }
-const output = [{
+let output = [{
     file: 'server/js/webstorage-proxy.js', 
+    ...FormatName
+}, {
+    file: 'dist/webstorage-proxy.js', 
     ...FormatName
 }]
 
 if (production) {
-    output[0] = {
-        file: 'dist/webstorage-proxy.js', 
-        ...FormatName
-    }
-    output[1] = {
+    output = {
         file: 'dist/webstorage-proxy.min.js', 
         ...FormatName
     }
