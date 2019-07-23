@@ -16,6 +16,6 @@ export default function (type, msg) {
         }
     } catch (e) {
         console.error(e)
-        return e.message
+        return e
     }
 }
