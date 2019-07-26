@@ -1,33 +1,33 @@
-// localStorage.setItem('native1', 'native1');
-// localStorage.setItem('native2', 'native2');
+localStorage.setItem('native1', 'native1');
+localStorage.setItem('native2', 'native2');
 
-// sessionStorage.setItem('native1', 'native1');
-// sessionStorage.setItem('native2', 'native2');
-// sessionStorage.setItem('native3', 'native3');
-// sessionStorage.setItem('native4', 'native4');
+sessionStorage.setItem('native1', 'value-native1');
+sessionStorage.setItem('native2', 'value-native2');
+sessionStorage.setItem('native3', 'value-native3');
+sessionStorage.setItem('native4', 'value-native4');
 
-// sessionStorage.setItem('_WEBSTORAGEPROXY:name', 'storage');
-// sessionStorage.setItem('_WEBSTORAGEPROXY:age', 9999999);
-// sessionStorage.setItem('_WEBSTORAGEPROXY:skills', JSON.stringify({
-//     web: {
-//         base: ['storage'],
-//         back: 'chrome',
-//         time: 2
-//     }
-// }));
-// sessionStorage.setItem('_WEBSTORAGEPROXY_NAMESPACE:YinChengNuo', JSON.stringify({
-//     name: 'yinchengnuo',
-//     age: 18,
-//     skills: {
-//         web: {
-//             base: ['html', 'css', 'js'],
-//             back: 'nodejs',
-//             time: 2
-//         },
-//         guitar: 'guitar'
-//     },
-//     sex: true
-// }));
+sessionStorage.setItem('_WEBSTORAGEPROXY:name', 'storage');
+sessionStorage.setItem('_WEBSTORAGEPROXY:age', 9999999);
+sessionStorage.setItem('_WEBSTORAGEPROXY:skills', JSON.stringify({
+    web: {
+        base: ['storage'],
+        back: 'chrome',
+        time: 2
+    }
+}));
+sessionStorage.setItem('_WEBSTORAGEPROXY_NAMESPACE:YinChengNuo', JSON.stringify({
+    name: 'yinchengnuo',
+    age: 18,
+    skills: {
+        web: {
+            base: ['html', 'css', 'js'],
+            back: 'nodejs',
+            time: 2
+        },
+        guitar: 'guitar'
+    },
+    sex: true
+}));
 // let key = '0'
 // for (let i = 0; i < 1024 * 1024 * .5; i ++) {
 //     key += 0
@@ -53,51 +53,59 @@
 //     }
 // } while (!isFull)
 
+window.addEventListener('storage', (e) => {
+    console.log(e)
+})
+
+setItem.onclick = () => {
+    console.log(23333333)
+    sessionStorage.setItem('data', 'data')
+}
 
 const option = {
-    type: 'sessionStorage', 
-    maxSpace: 4, 
-    nameSpace: (nameSpaces) => {
-        // return nameSpaces[0]
-        return 'YinChengNuo'
+    type: 'sessionStorage',
+    maxSpace: 4,
+    // nameSpace: (nameSpaces) => {
+    //     // return nameSpaces[0]
+    //     return 'YinChengNuo'
+    // },
+    beforeCreate() {
+        console.log('钩子函数：beforedCreate, this is : ', this)
     },
-    boforedCreate () {
-        console.log('boforedCreate, this is : ', this)
+    created() {
+        console.log('钩子函数：created, this is : ', this)
     },
-    created () {
-        console.log('created, this is : ', this)
+    beforeGet() {
+        console.log('钩子函数：beforeGet, this is : ', this)
     },
-    beforeGet () {
-        console.log('beforeGet, this is : ', this)
+    geted() {
+        console.log('钩子函数：geted, this is : ', this)
     },
-    geted () {
-        console.log('geted, this is : ', this)
+    beforeSet() {
+        console.log('钩子函数：beforeSet, this is : ', this)
     },
-    beforeSet () {
-        console.log('beforeSet, this is : ', this)
+    proxySeted() {
+        console.log('钩子函数：proxySeted, this is : ', this)
     },
-    proxySeted () {
-        console.log('proxySeted, this is : ', this)
+    storageSeted() {
+        console.log('钩子函数：storageSeted, this is : ', this)
     },
-    storageSeted () {
-        console.log('storageSeted, this is : ', this)
+    beforeDestroy() {
+        console.log('钩子函数：beforeDestroy, this is : ', this)
     },
-    beforeDestroy () {
-        console.log('beforeDestroy, this is : ', this)
+    destroyed() {
+        console.log('钩子函数：destroyed, this is : ', this)
     },
-    destroyed () {
-        console.log('destroyed, this is : ', this)
+    beforeBeyond() {
+        console.log('钩子函数：beforeBeyond, this is : ', this)
     },
-    beforeBeyond () {
-        console.log('beforeBeyond, this is : ', this)
-    },
-    encryption () {
+    encryption() {
 
     },
-    decryption () {
+    decryption() {
 
     }
 }
 const storage = new WebStorageProxy(option)
-
-console.log(storage, '=============================================WebStorageProxy对象')
+document.write("<pre>" + JSON.stringify(storage, null, 4) + "</pre>")
+console.log(storage, 'WebStorageProxy对象')
