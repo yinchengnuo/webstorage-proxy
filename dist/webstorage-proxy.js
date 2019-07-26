@@ -2457,68 +2457,74 @@
   var merge_1 = merge$1;
 
   function _map () {
-    this.name = 'test';
-
     if (this._NAMESPACE) {
       var json = window[this._TYPE][this._GETITEM]("".concat(this._WEBSTORAGEPROXY_NAMESPACE, ":").concat(this._NAMESPACE));
 
       if (json) {
         merge_1(this, JSON.parse(json));
-        console.log('mapt', this);
       } else {
         window[this._TYPE][this._SETITEM]("".concat(this._WEBSTORAGEPROXY_NAMESPACE, ":").concat(this._NAMESPACE), '');
       }
     } else {
       for (var i = 0; i < window[this._TYPE].length; i++) {
-        // console.log(window[this._TYPE].key(i))
         if (!window[this._TYPE].key(i).match('_WEBSTORAGEPROXY_NAMESPACE')) {
-          // try {
-          //     this.
-          // }
-          console.log(window[this._TYPE][this._GETITEM](window[this._TYPE].key(i)));
+          if (window[this._TYPE].key(i).split('_WEBSTORAGEPROXY:')[1]) {
+            try {
+              this[window[this._TYPE].key(i).split('_WEBSTORAGEPROXY:')[1]] = JSON.parse(window[this._TYPE][this._GETITEM](window[this._TYPE].key(i)));
+            } catch (_unused) {
+              this[window[this._TYPE].key(i).split('_WEBSTORAGEPROXY:')[1]] = window[this._TYPE][this._GETITEM](window[this._TYPE].key(i));
+            }
+          } else {
+            try {
+              this[window[this._TYPE].key(i)] = JSON.parse(window[this._TYPE][this._GETITEM](window[this._TYPE].key(i)));
+            } catch (_unused2) {
+              this[window[this._TYPE].key(i)] = window[this._TYPE][this._GETITEM](window[this._TYPE].key(i));
+            }
+          }
         }
       }
     }
   }
 
   function _proxy () {
-    if (this.nameSpace) {
-      return new Proxy(this, {// set () {
-        //     if (Super.nameSpace) {
-        //         console.log(Super.nameSpace)
-        //     } else {
-        //         console.log('set')
-        //     }
-        // },
-        // get (...arg) {
-        //     if (Super.nameSpace) {
-        //         const space = window[Super.type].getItem(`_NAMESPACE:${Super.nameSpace}`) ? JSON.parse(window[Super.type].getItem(`_NAMESPACE:${Super.nameSpace}`)) : {}
-        //         console.log(space)
-        //         return space[arg[1]]
-        //     } else {
-        //         console.log('set')
-        //     }
-        // }
-      });
-    } // return new Proxy(this, {
-    //     set () {
-    //         if (Super.nameSpace) {
-    //             console.log(Super.nameSpace)
-    //         } else {
-    //             console.log('set')
-    //         }
-    //     },
-    //     get (...arg) {
-    //         if (Super.nameSpace) {
-    //             const space = window[Super.type].getItem(`_NAMESPACE:${Super.nameSpace}`) ? JSON.parse(window[Super.type].getItem(`_NAMESPACE:${Super.nameSpace}`)) : {}
-    //             console.log(space)
-    //             return space[arg[1]]
-    //         } else {
-    //             console.log('set')
-    //         }
-    //     }
-    // })
+    var _this = this;
 
+    var proxy = function proxy(state) {
+      var WebStorageProxy = _this;
+      var proxyObj = new Proxy(state, {
+        get: function get(target, key) {
+          WebStorageProxy.beforeGet.call(target, key);
+          Promise.resolve().then(function () {
+            WebStorageProxy.geted.call(target, key);
+          });
+          return target[key];
+        },
+        set: function set(target, key, value) {
+          WebStorageProxy.beforeSet.call(target, key, value);
+
+          if (typeof value === 'function') {
+            console.log('isFunction');
+          } else {
+            if (isObject_1(value) || isArray_1(value)) {
+              target[key] = proxy(value);
+            } else {
+              target[key] = value;
+            }
+          }
+
+          WebStorageProxy.proxySeted.call(target, key, value);
+          console.log('更新storage');
+        }
+      });
+      Object.keys(state).forEach(function (e) {
+        if (isObject_1(e) || isArray_1(e)) {
+          state[e] = proxy(state[e]);
+        }
+      });
+      return proxyObj;
+    };
+
+    this.state = proxy(this.state);
   }
 
   function override (WebStorageProxyPrototype) {
@@ -2607,7 +2613,8 @@
 
         this.state.map(); //将storage映射到state上
 
-        return this.state.proxy();
+        this.proxy();
+        return this.state;
       }
     }, {
       key: "map",

@@ -18,7 +18,8 @@ class WebStorageProxy {
         })
         this.state = Object.create(this) //定义当前对象的状态
         this.state.map() //将storage映射到state上
-        return this.state.proxy()
+        this.proxy()
+        return this.state
     }
     map() {
         map.call(this)

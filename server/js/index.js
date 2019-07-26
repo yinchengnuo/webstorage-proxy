@@ -28,6 +28,10 @@ sessionStorage.setItem('_WEBSTORAGEPROXY_NAMESPACE:YinChengNuo', JSON.stringify(
     },
     sex: true
 }));
+
+window.addEventListener('storage', e => {
+    console.log(e)
+})
 // let key = '0'
 // for (let i = 0; i < 1024 * 1024 * .5; i ++) {
 //     key += 0
@@ -53,14 +57,6 @@ sessionStorage.setItem('_WEBSTORAGEPROXY_NAMESPACE:YinChengNuo', JSON.stringify(
 //     }
 // } while (!isFull)
 
-window.addEventListener('storage', (e) => {
-    console.log(e)
-})
-
-setItem.onclick = () => {
-    console.log(23333333)
-    sessionStorage.setItem('data', 'data')
-}
 
 const option = {
     type: 'sessionStorage',
@@ -70,22 +66,22 @@ const option = {
     //     return 'YinChengNuo'
     // },
     beforeCreate() {
-        console.log('钩子函数：beforedCreate, this is : ', this)
+        console.log('钩子函数：beforedCreate, this is : ', this)  //OK
     },
     created() {
-        console.log('钩子函数：created, this is : ', this)
+        console.log('钩子函数：created, this is : ', this)  //OK
     },
     beforeGet() {
-        console.log('钩子函数：beforeGet, this is : ', this)
+        console.log('钩子函数：beforeGet, this is : ', this)  //OK
     },
     geted() {
-        console.log('钩子函数：geted, this is : ', this)
+        console.log('钩子函数：geted, this is : ', this)  //OK
     },
     beforeSet() {
-        console.log('钩子函数：beforeSet, this is : ', this)
+        console.log('钩子函数：beforeSet, this is : ', this)  //OK
     },
     proxySeted() {
-        console.log('钩子函数：proxySeted, this is : ', this)
+        console.log('钩子函数：proxySeted, this is : ', this)  //OK
     },
     storageSeted() {
         console.log('钩子函数：storageSeted, this is : ', this)
@@ -107,5 +103,5 @@ const option = {
     }
 }
 const storage = new WebStorageProxy(option)
-document.write("<pre>" + JSON.stringify(storage, null, 4) + "</pre>")
+document.write("<pre>" + JSON.stringify(storage, null, 8) + "</pre>")
 console.log(storage, 'WebStorageProxy对象')
