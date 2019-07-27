@@ -1,10 +1,7 @@
-import isString from 'lodash/isString'
-import isFunction from 'lodash/isFunction'
-
 export default function (nameSpace) {
-    if (isString(nameSpace)) {
+    if (typeof nameSpace === 'string') {
         this._NAMESPACE = nameSpace
-    } else if (isFunction(nameSpace)) {
+    } else if (typeof nameSpace === 'function') {
         const nameSpaces = []
         for (let i = 0; i < window[this._TYPE].length; i ++) {
             if (window[this._TYPE].key(i).match(new RegExp(this._WEBSTORAGEPROXY_NAMESPACE + ':'))) {

@@ -12,386 +12,6 @@
     }
   }
 
-  function _defineProperties(target, props) {
-    for (var i = 0; i < props.length; i++) {
-      var descriptor = props[i];
-      descriptor.enumerable = descriptor.enumerable || false;
-      descriptor.configurable = true;
-      if ("value" in descriptor) descriptor.writable = true;
-      Object.defineProperty(target, descriptor.key, descriptor);
-    }
-  }
-
-  function _createClass(Constructor, protoProps, staticProps) {
-    if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-    if (staticProps) _defineProperties(Constructor, staticProps);
-    return Constructor;
-  }
-
-  var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
-
-  function createCommonjsModule(fn, module) {
-  	return module = { exports: {} }, fn(module, module.exports), module.exports;
-  }
-
-  /** Detect free variable `global` from Node.js. */
-  var freeGlobal = typeof commonjsGlobal == 'object' && commonjsGlobal && commonjsGlobal.Object === Object && commonjsGlobal;
-
-  var _freeGlobal = freeGlobal;
-
-  /** Detect free variable `self`. */
-  var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
-
-  /** Used as a reference to the global object. */
-  var root = _freeGlobal || freeSelf || Function('return this')();
-
-  var _root = root;
-
-  /** Built-in value references. */
-  var Symbol$1 = _root.Symbol;
-
-  var _Symbol = Symbol$1;
-
-  /** Used for built-in method references. */
-  var objectProto = Object.prototype;
-
-  /** Used to check objects for own properties. */
-  var hasOwnProperty = objectProto.hasOwnProperty;
-
-  /**
-   * Used to resolve the
-   * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
-   * of values.
-   */
-  var nativeObjectToString = objectProto.toString;
-
-  /** Built-in value references. */
-  var symToStringTag = _Symbol ? _Symbol.toStringTag : undefined;
-
-  /**
-   * A specialized version of `baseGetTag` which ignores `Symbol.toStringTag` values.
-   *
-   * @private
-   * @param {*} value The value to query.
-   * @returns {string} Returns the raw `toStringTag`.
-   */
-  function getRawTag(value) {
-    var isOwn = hasOwnProperty.call(value, symToStringTag),
-        tag = value[symToStringTag];
-
-    try {
-      value[symToStringTag] = undefined;
-      var unmasked = true;
-    } catch (e) {}
-
-    var result = nativeObjectToString.call(value);
-    if (unmasked) {
-      if (isOwn) {
-        value[symToStringTag] = tag;
-      } else {
-        delete value[symToStringTag];
-      }
-    }
-    return result;
-  }
-
-  var _getRawTag = getRawTag;
-
-  /** Used for built-in method references. */
-  var objectProto$1 = Object.prototype;
-
-  /**
-   * Used to resolve the
-   * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
-   * of values.
-   */
-  var nativeObjectToString$1 = objectProto$1.toString;
-
-  /**
-   * Converts `value` to a string using `Object.prototype.toString`.
-   *
-   * @private
-   * @param {*} value The value to convert.
-   * @returns {string} Returns the converted string.
-   */
-  function objectToString(value) {
-    return nativeObjectToString$1.call(value);
-  }
-
-  var _objectToString = objectToString;
-
-  /** `Object#toString` result references. */
-  var nullTag = '[object Null]',
-      undefinedTag = '[object Undefined]';
-
-  /** Built-in value references. */
-  var symToStringTag$1 = _Symbol ? _Symbol.toStringTag : undefined;
-
-  /**
-   * The base implementation of `getTag` without fallbacks for buggy environments.
-   *
-   * @private
-   * @param {*} value The value to query.
-   * @returns {string} Returns the `toStringTag`.
-   */
-  function baseGetTag(value) {
-    if (value == null) {
-      return value === undefined ? undefinedTag : nullTag;
-    }
-    return (symToStringTag$1 && symToStringTag$1 in Object(value))
-      ? _getRawTag(value)
-      : _objectToString(value);
-  }
-
-  var _baseGetTag = baseGetTag;
-
-  /**
-   * Checks if `value` is classified as an `Array` object.
-   *
-   * @static
-   * @memberOf _
-   * @since 0.1.0
-   * @category Lang
-   * @param {*} value The value to check.
-   * @returns {boolean} Returns `true` if `value` is an array, else `false`.
-   * @example
-   *
-   * _.isArray([1, 2, 3]);
-   * // => true
-   *
-   * _.isArray(document.body.children);
-   * // => false
-   *
-   * _.isArray('abc');
-   * // => false
-   *
-   * _.isArray(_.noop);
-   * // => false
-   */
-  var isArray = Array.isArray;
-
-  var isArray_1 = isArray;
-
-  /**
-   * Checks if `value` is object-like. A value is object-like if it's not `null`
-   * and has a `typeof` result of "object".
-   *
-   * @static
-   * @memberOf _
-   * @since 4.0.0
-   * @category Lang
-   * @param {*} value The value to check.
-   * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
-   * @example
-   *
-   * _.isObjectLike({});
-   * // => true
-   *
-   * _.isObjectLike([1, 2, 3]);
-   * // => true
-   *
-   * _.isObjectLike(_.noop);
-   * // => false
-   *
-   * _.isObjectLike(null);
-   * // => false
-   */
-  function isObjectLike(value) {
-    return value != null && typeof value == 'object';
-  }
-
-  var isObjectLike_1 = isObjectLike;
-
-  /** `Object#toString` result references. */
-  var stringTag = '[object String]';
-
-  /**
-   * Checks if `value` is classified as a `String` primitive or object.
-   *
-   * @static
-   * @since 0.1.0
-   * @memberOf _
-   * @category Lang
-   * @param {*} value The value to check.
-   * @returns {boolean} Returns `true` if `value` is a string, else `false`.
-   * @example
-   *
-   * _.isString('abc');
-   * // => true
-   *
-   * _.isString(1);
-   * // => false
-   */
-  function isString(value) {
-    return typeof value == 'string' ||
-      (!isArray_1(value) && isObjectLike_1(value) && _baseGetTag(value) == stringTag);
-  }
-
-  var isString_1 = isString;
-
-  /**
-   * Checks if `value` is the
-   * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
-   * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
-   *
-   * @static
-   * @memberOf _
-   * @since 0.1.0
-   * @category Lang
-   * @param {*} value The value to check.
-   * @returns {boolean} Returns `true` if `value` is an object, else `false`.
-   * @example
-   *
-   * _.isObject({});
-   * // => true
-   *
-   * _.isObject([1, 2, 3]);
-   * // => true
-   *
-   * _.isObject(_.noop);
-   * // => true
-   *
-   * _.isObject(null);
-   * // => false
-   */
-  function isObject(value) {
-    var type = typeof value;
-    return value != null && (type == 'object' || type == 'function');
-  }
-
-  var isObject_1 = isObject;
-
-  /** `Object#toString` result references. */
-  var asyncTag = '[object AsyncFunction]',
-      funcTag = '[object Function]',
-      genTag = '[object GeneratorFunction]',
-      proxyTag = '[object Proxy]';
-
-  /**
-   * Checks if `value` is classified as a `Function` object.
-   *
-   * @static
-   * @memberOf _
-   * @since 0.1.0
-   * @category Lang
-   * @param {*} value The value to check.
-   * @returns {boolean} Returns `true` if `value` is a function, else `false`.
-   * @example
-   *
-   * _.isFunction(_);
-   * // => true
-   *
-   * _.isFunction(/abc/);
-   * // => false
-   */
-  function isFunction(value) {
-    if (!isObject_1(value)) {
-      return false;
-    }
-    // The use of `Object#toString` avoids issues with the `typeof` operator
-    // in Safari 9 which returns 'object' for typed arrays and other constructors.
-    var tag = _baseGetTag(value);
-    return tag == funcTag || tag == genTag || tag == asyncTag || tag == proxyTag;
-  }
-
-  var isFunction_1 = isFunction;
-
-  function nameSpaceCheck (nameSpace) {
-    if (isString_1(nameSpace)) {
-      this._NAMESPACE = nameSpace;
-    } else if (isFunction_1(nameSpace)) {
-      var nameSpaces = [];
-
-      for (var i = 0; i < window[this._TYPE].length; i++) {
-        if (window[this._TYPE].key(i).match(new RegExp(this._WEBSTORAGEPROXY_NAMESPACE + ':'))) {
-          nameSpaces.push(window[this._TYPE].key(i).replace(new RegExp(this._WEBSTORAGEPROXY_NAMESPACE + ':'), ''));
-        }
-      }
-
-      this._NAMESPACE = nameSpace(nameSpaces);
-    } else {
-      this.nameSpace = null;
-    }
-  }
-
-  function merge (arg) {
-    if (arg.length == 1) {
-      if (isString_1(arg[0])) {
-        this._TYPE = arg[0];
-        this._MAXSPACE = null;
-        this._NAMESPACE = null;
-
-        this.beforeCreate = function () {};
-
-        this.created = function () {};
-
-        this.beforeGet = function () {};
-
-        this.geted = function () {};
-
-        this.beforeSet = function () {};
-
-        this.proxySeted = function () {};
-
-        this.storageSeted = function () {};
-
-        this.beforeDestroy = function () {};
-
-        this.destroyed = function () {};
-
-        this.beforeBeyond = function () {};
-
-        this.encryption = function () {};
-
-        this.decryption = function () {};
-      } else if (isObject_1(arg[0])) {
-        this._TYPE = arg[0].type;
-        this._MAXSPACE = arg[0].maxSpace * 1024 * 1024;
-        nameSpaceCheck.call(this, arg[0].nameSpace);
-        isFunction_1(arg[0].beforeCreate) ? this.beforeCreate = arg[0].beforeCreate : function () {};
-        isFunction_1(arg[0].created) ? this.created = arg[0].created : function () {};
-        isFunction_1(arg[0].beforeGet) ? this.beforeGet = arg[0].beforeGet : function () {};
-        isFunction_1(arg[0].geted) ? this.geted = arg[0].geted : function () {};
-        isFunction_1(arg[0].beforeSet) ? this.beforeSet = arg[0].beforeSet : function () {};
-        isFunction_1(arg[0].proxySeted) ? this.proxySeted = arg[0].proxySeted : function () {};
-        isFunction_1(arg[0].storageSeted) ? this.storageSeted = arg[0].storageSeted : function () {};
-        isFunction_1(arg[0].beforeDestroy) ? this.beforeDestroy = arg[0].beforeDestroy : function () {};
-        isFunction_1(arg[0].destroyed) ? this.destroyed = arg[0].destroyed : function () {};
-        isFunction_1(arg[0].beforeBeyond) ? this.beforeBeyond = arg[0].beforeBeyond : function () {};
-        isFunction_1(arg[0].encryption) ? this.encryption = arg[0].encryption : function () {};
-        isFunction_1(arg[0].decryption) ? this.decryption = arg[0].decryption : function () {};
-      }
-    } else {
-      this._TYPE = arg[0];
-      this._MAXSPACE = arg[1] * 1024 * 1024;
-      nameSpaceCheck.call(this, arg[2]);
-
-      this.beforeCreate = function () {};
-
-      this.created = function () {};
-
-      this.beforeGet = function () {};
-
-      this.geted = function () {};
-
-      this.beforeSet = function () {};
-
-      this.proxySeted = function () {};
-
-      this.storageSeted = function () {};
-
-      this.beforeDestroy = function () {};
-
-      this.destroyed = function () {};
-
-      this.beforeBeyond = function () {};
-
-      this.encryption = function () {};
-
-      this.decryption = function () {};
-    }
-  }
-
   /**
    * Removes all key-value entries from the list cache.
    *
@@ -645,6 +265,190 @@
   }
 
   var _stackHas = stackHas;
+
+  var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
+  function createCommonjsModule(fn, module) {
+  	return module = { exports: {} }, fn(module, module.exports), module.exports;
+  }
+
+  /** Detect free variable `global` from Node.js. */
+  var freeGlobal = typeof commonjsGlobal == 'object' && commonjsGlobal && commonjsGlobal.Object === Object && commonjsGlobal;
+
+  var _freeGlobal = freeGlobal;
+
+  /** Detect free variable `self`. */
+  var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
+
+  /** Used as a reference to the global object. */
+  var root = _freeGlobal || freeSelf || Function('return this')();
+
+  var _root = root;
+
+  /** Built-in value references. */
+  var Symbol$1 = _root.Symbol;
+
+  var _Symbol = Symbol$1;
+
+  /** Used for built-in method references. */
+  var objectProto = Object.prototype;
+
+  /** Used to check objects for own properties. */
+  var hasOwnProperty = objectProto.hasOwnProperty;
+
+  /**
+   * Used to resolve the
+   * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
+   * of values.
+   */
+  var nativeObjectToString = objectProto.toString;
+
+  /** Built-in value references. */
+  var symToStringTag = _Symbol ? _Symbol.toStringTag : undefined;
+
+  /**
+   * A specialized version of `baseGetTag` which ignores `Symbol.toStringTag` values.
+   *
+   * @private
+   * @param {*} value The value to query.
+   * @returns {string} Returns the raw `toStringTag`.
+   */
+  function getRawTag(value) {
+    var isOwn = hasOwnProperty.call(value, symToStringTag),
+        tag = value[symToStringTag];
+
+    try {
+      value[symToStringTag] = undefined;
+      var unmasked = true;
+    } catch (e) {}
+
+    var result = nativeObjectToString.call(value);
+    if (unmasked) {
+      if (isOwn) {
+        value[symToStringTag] = tag;
+      } else {
+        delete value[symToStringTag];
+      }
+    }
+    return result;
+  }
+
+  var _getRawTag = getRawTag;
+
+  /** Used for built-in method references. */
+  var objectProto$1 = Object.prototype;
+
+  /**
+   * Used to resolve the
+   * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
+   * of values.
+   */
+  var nativeObjectToString$1 = objectProto$1.toString;
+
+  /**
+   * Converts `value` to a string using `Object.prototype.toString`.
+   *
+   * @private
+   * @param {*} value The value to convert.
+   * @returns {string} Returns the converted string.
+   */
+  function objectToString(value) {
+    return nativeObjectToString$1.call(value);
+  }
+
+  var _objectToString = objectToString;
+
+  /** `Object#toString` result references. */
+  var nullTag = '[object Null]',
+      undefinedTag = '[object Undefined]';
+
+  /** Built-in value references. */
+  var symToStringTag$1 = _Symbol ? _Symbol.toStringTag : undefined;
+
+  /**
+   * The base implementation of `getTag` without fallbacks for buggy environments.
+   *
+   * @private
+   * @param {*} value The value to query.
+   * @returns {string} Returns the `toStringTag`.
+   */
+  function baseGetTag(value) {
+    if (value == null) {
+      return value === undefined ? undefinedTag : nullTag;
+    }
+    return (symToStringTag$1 && symToStringTag$1 in Object(value))
+      ? _getRawTag(value)
+      : _objectToString(value);
+  }
+
+  var _baseGetTag = baseGetTag;
+
+  /**
+   * Checks if `value` is the
+   * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
+   * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+   *
+   * @static
+   * @memberOf _
+   * @since 0.1.0
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is an object, else `false`.
+   * @example
+   *
+   * _.isObject({});
+   * // => true
+   *
+   * _.isObject([1, 2, 3]);
+   * // => true
+   *
+   * _.isObject(_.noop);
+   * // => true
+   *
+   * _.isObject(null);
+   * // => false
+   */
+  function isObject(value) {
+    var type = typeof value;
+    return value != null && (type == 'object' || type == 'function');
+  }
+
+  var isObject_1 = isObject;
+
+  /** `Object#toString` result references. */
+  var asyncTag = '[object AsyncFunction]',
+      funcTag = '[object Function]',
+      genTag = '[object GeneratorFunction]',
+      proxyTag = '[object Proxy]';
+
+  /**
+   * Checks if `value` is classified as a `Function` object.
+   *
+   * @static
+   * @memberOf _
+   * @since 0.1.0
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is a function, else `false`.
+   * @example
+   *
+   * _.isFunction(_);
+   * // => true
+   *
+   * _.isFunction(/abc/);
+   * // => false
+   */
+  function isFunction(value) {
+    if (!isObject_1(value)) {
+      return false;
+    }
+    // The use of `Object#toString` avoids issues with the `typeof` operator
+    // in Safari 9 which returns 'object' for typed arrays and other constructors.
+    var tag = _baseGetTag(value);
+    return tag == funcTag || tag == genTag || tag == asyncTag || tag == proxyTag;
+  }
+
+  var isFunction_1 = isFunction;
 
   /** Used to detect overreaching core-js shims. */
   var coreJsData = _root['__core-js_shared__'];
@@ -1378,6 +1182,36 @@
 
   var _initCloneObject = initCloneObject;
 
+  /**
+   * Checks if `value` is object-like. A value is object-like if it's not `null`
+   * and has a `typeof` result of "object".
+   *
+   * @static
+   * @memberOf _
+   * @since 4.0.0
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
+   * @example
+   *
+   * _.isObjectLike({});
+   * // => true
+   *
+   * _.isObjectLike([1, 2, 3]);
+   * // => true
+   *
+   * _.isObjectLike(_.noop);
+   * // => false
+   *
+   * _.isObjectLike(null);
+   * // => false
+   */
+  function isObjectLike(value) {
+    return value != null && typeof value == 'object';
+  }
+
+  var isObjectLike_1 = isObjectLike;
+
   /** `Object#toString` result references. */
   var argsTag = '[object Arguments]';
 
@@ -1427,6 +1261,33 @@
   };
 
   var isArguments_1 = isArguments;
+
+  /**
+   * Checks if `value` is classified as an `Array` object.
+   *
+   * @static
+   * @memberOf _
+   * @since 0.1.0
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is an array, else `false`.
+   * @example
+   *
+   * _.isArray([1, 2, 3]);
+   * // => true
+   *
+   * _.isArray(document.body.children);
+   * // => false
+   *
+   * _.isArray('abc');
+   * // => false
+   *
+   * _.isArray(_.noop);
+   * // => false
+   */
+  var isArray = Array.isArray;
+
+  var isArray_1 = isArray;
 
   /** Used as references for various `Number` constants. */
   var MAX_SAFE_INTEGER = 9007199254740991;
@@ -1654,7 +1515,7 @@
       objectTag$1 = '[object Object]',
       regexpTag = '[object RegExp]',
       setTag = '[object Set]',
-      stringTag$1 = '[object String]',
+      stringTag = '[object String]',
       weakMapTag = '[object WeakMap]';
 
   var arrayBufferTag = '[object ArrayBuffer]',
@@ -1682,7 +1543,7 @@
   typedArrayTags[errorTag] = typedArrayTags[funcTag$1] =
   typedArrayTags[mapTag] = typedArrayTags[numberTag] =
   typedArrayTags[objectTag$1] = typedArrayTags[regexpTag] =
-  typedArrayTags[setTag] = typedArrayTags[stringTag$1] =
+  typedArrayTags[setTag] = typedArrayTags[stringTag] =
   typedArrayTags[weakMapTag] = false;
 
   /**
@@ -2450,18 +2311,18 @@
    * _.merge(object, other);
    * // => { 'a': [{ 'b': 2, 'c': 3 }, { 'd': 4, 'e': 5 }] }
    */
-  var merge$1 = _createAssigner(function(object, source, srcIndex) {
+  var merge = _createAssigner(function(object, source, srcIndex) {
     _baseMerge(object, source, srcIndex);
   });
 
-  var merge_1 = merge$1;
+  var merge_1 = merge;
 
-  function _map () {
+  function map () {
     if (this._NAMESPACE) {
       var json = window[this._TYPE][this._GETITEM]("".concat(this._WEBSTORAGEPROXY_NAMESPACE, ":").concat(this._NAMESPACE));
 
       if (json) {
-        merge_1(this, JSON.parse(json));
+        merge_1(this.state, JSON.parse(json));
       } else {
         window[this._TYPE][this._SETITEM]("".concat(this._WEBSTORAGEPROXY_NAMESPACE, ":").concat(this._NAMESPACE), '');
       }
@@ -2470,15 +2331,15 @@
         if (!window[this._TYPE].key(i).match('_WEBSTORAGEPROXY_NAMESPACE')) {
           if (window[this._TYPE].key(i).split('_WEBSTORAGEPROXY:')[1]) {
             try {
-              this[window[this._TYPE].key(i).split('_WEBSTORAGEPROXY:')[1]] = JSON.parse(window[this._TYPE][this._GETITEM](window[this._TYPE].key(i)));
+              this.state[window[this._TYPE].key(i).split('_WEBSTORAGEPROXY:')[1]] = JSON.parse(window[this._TYPE][this._GETITEM](window[this._TYPE].key(i)));
             } catch (_unused) {
-              this[window[this._TYPE].key(i).split('_WEBSTORAGEPROXY:')[1]] = window[this._TYPE][this._GETITEM](window[this._TYPE].key(i));
+              this.state[window[this._TYPE].key(i).split('_WEBSTORAGEPROXY:')[1]] = window[this._TYPE][this._GETITEM](window[this._TYPE].key(i));
             }
           } else {
             try {
-              this[window[this._TYPE].key(i)] = JSON.parse(window[this._TYPE][this._GETITEM](window[this._TYPE].key(i)));
+              this.state[window[this._TYPE].key(i)] = JSON.parse(window[this._TYPE][this._GETITEM](window[this._TYPE].key(i)));
             } catch (_unused2) {
-              this[window[this._TYPE].key(i)] = window[this._TYPE][this._GETITEM](window[this._TYPE].key(i));
+              this.state[window[this._TYPE].key(i)] = window[this._TYPE][this._GETITEM](window[this._TYPE].key(i));
             }
           }
         }
@@ -2486,38 +2347,66 @@
     }
   }
 
-  function _proxy () {
+  var callFunArr = function callFunArr(funArr, that) {
+    for (var _len = arguments.length, arg = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+      arg[_key - 2] = arguments[_key];
+    }
+
+    for (var i = 0; i < funArr.length; i++) {
+      var _funArr$i;
+
+      (_funArr$i = funArr[i]).call.apply(_funArr$i, [that].concat(arg));
+    }
+  };
+  var checkName = function checkName(name) {
+    return name === 'beforeGet' || name === 'geted' || name === 'beforeSet' || name === 'proxySeted' || name === 'storageSeted' || name === 'storageChanged' || name === 'beforeBeyond';
+  };
+  var dispatch = function dispatch(type, that, key, newValue, oldValue) {
+    window.dispatchEvent(new StorageEvent(type, {
+      key: key,
+      newValue: newValue,
+      oldValue: oldValue,
+      storageArea: that,
+      url: window.location.href.split('/')[0] + '//' + window.location.href.split('/')[2]
+    }));
+  };
+
+  function proxy () {
     var _this = this;
 
     var proxy = function proxy(state) {
-      var WebStorageProxy = _this;
+      var that = _this;
       var proxyObj = new Proxy(state, {
         get: function get(target, key) {
-          WebStorageProxy.beforeGet.call(target, key);
-          Promise.resolve().then(function () {
-            WebStorageProxy.geted.call(target, key);
-          });
-          return target[key];
+          if (checkName(key)) {
+            return that[key];
+          } else {
+            callFunArr(that.beforeGet, target, key);
+            Promise.resolve().then(function () {
+              callFunArr(that.geted, target, key);
+            });
+            return target[key];
+          }
         },
         set: function set(target, key, value) {
-          WebStorageProxy.beforeSet.call(target, key, value);
-
-          if (typeof value === 'function') {
-            console.log('isFunction');
+          if (typeof value === 'function' && checkName(key)) {
+            that[key][that[key].length] = value;
           } else {
-            if (isObject_1(value) || isArray_1(value)) {
+            callFunArr(that.beforeSet, target, key, value);
+
+            if (Object.prototype.toString.call(value) === '[object Object]' || Object.prototype.toString.call(value) === '[object Array]') {
               target[key] = proxy(value);
             } else {
               target[key] = value;
             }
-          }
 
-          WebStorageProxy.proxySeted.call(target, key, value);
-          console.log('更新storage');
+            callFunArr(that.proxySeted, target, key, value);
+            console.log('更新storage');
+          }
         }
       });
       Object.keys(state).forEach(function (e) {
-        if (isObject_1(e) || isArray_1(e)) {
+        if (Object.prototype.toString.call(e) === '[object Object]' || Object.prototype.toString.call(e) === '[object Array]') {
           state[e] = proxy(state[e]);
         }
       });
@@ -2527,14 +2416,117 @@
     this.state = proxy(this.state);
   }
 
+  function nameSpaceCheck (nameSpace) {
+    if (typeof nameSpace === 'string') {
+      this._NAMESPACE = nameSpace;
+    } else if (typeof nameSpace === 'function') {
+      var nameSpaces = [];
+
+      for (var i = 0; i < window[this._TYPE].length; i++) {
+        if (window[this._TYPE].key(i).match(new RegExp(this._WEBSTORAGEPROXY_NAMESPACE + ':'))) {
+          nameSpaces.push(window[this._TYPE].key(i).replace(new RegExp(this._WEBSTORAGEPROXY_NAMESPACE + ':'), ''));
+        }
+      }
+
+      this._NAMESPACE = nameSpace(nameSpaces);
+    } else {
+      this.nameSpace = null;
+    }
+  }
+
+  var proxy$1 = function proxy(state) {
+    return new Proxy(state, {
+      set: function set(target, key, value) {
+        if (key == target.length && typeof value === 'function') {
+          target[key] = value;
+          target.length = target.length += 1;
+          return true;
+        }
+      },
+      deleteProperty: function deleteProperty() {}
+    });
+  };
+
+  var ret0 = function ret0() {
+    return {
+      length: 0
+    };
+  };
+
+  var ret1 = function ret1(fun) {
+    return {
+      0: fun,
+      length: 1
+    };
+  };
+
+  var defaultConf = function defaultConf() {
+    this.beforeCreate = function () {};
+
+    this.created = function () {};
+
+    this.beforeGet = proxy$1(ret0());
+    this.geted = proxy$1(ret0());
+    this.beforeSet = proxy$1(ret0());
+    this.proxySeted = proxy$1(ret0());
+    this.storageSeted = proxy$1(ret0());
+    this.storageChanged = proxy$1(ret0());
+    this.beforeBeyond = proxy$1(ret0());
+
+    this.beforeDestroy = function () {};
+
+    this.destroyed = function () {};
+
+    this.encryption = function () {};
+
+    this.decryption = function () {};
+  };
+
+  function merge$1 (arg) {
+    if (arg.length) {
+      if (arg.length == 1) {
+        if (typeof arg[0] === 'string') {
+          this._TYPE = arg[0];
+          this._MAXSPACE = null;
+          this._NAMESPACE = null;
+          defaultConf.call(this);
+        } else if (arg[0].toString() === '[object Object]') {
+          this._TYPE = arg[0].type;
+          this._MAXSPACE = arg[0].maxSpace * 1024 * 1024;
+          nameSpaceCheck.call(this, arg[0].nameSpace);
+          typeof arg[0].beforeCreate === 'function' ? this.beforeCreate = arg[0].beforeCreate : function () {};
+          typeof arg[0].created === 'function' ? this.created = arg[0].created : function () {};
+          typeof arg[0].beforeGet === 'function' ? this.beforeGet = proxy$1(ret1(arg[0].beforeGet)) : proxy$1(ret0());
+          typeof arg[0].geted === 'function' ? this.geted = proxy$1(ret1(arg[0].geted)) : proxy$1(ret0());
+          typeof arg[0].beforeSet === 'function' ? this.beforeSet = proxy$1(ret1(arg[0].beforeSet)) : proxy$1(ret0());
+          typeof arg[0].proxySeted === 'function' ? this.proxySeted = proxy$1(ret1(arg[0].proxySeted)) : proxy$1(ret0());
+          typeof arg[0].storageSeted === 'function' ? this.storageSeted = proxy$1(ret1(arg[0].storageSeted)) : proxy$1(ret0());
+          typeof arg[0].storageChanged === 'function' ? this.storageChanged = proxy$1(ret1(arg[0].storageChanged)) : proxy$1(ret0());
+          typeof arg[0].beforeBeyond === 'function' ? this.beforeBeyond = proxy$1(ret1(arg[0].beforeBeyond)) : proxy$1(ret0());
+          typeof arg[0].beforeDestroy === 'function' ? this.beforeDestroy = arg[0].beforeDestroy : function () {};
+          typeof arg[0].destroyed === 'function' ? this.destroyed = arg[0].destroyed : function () {};
+          typeof arg[0].encryption === 'function' ? this.encryption = arg[0].encryption : function () {};
+          typeof arg[0].decryption === 'function' ? this.decryption = arg[0].decryption : function () {};
+        }
+      } else {
+        this._TYPE = arg[0];
+        this._MAXSPACE = arg[1] * 1024 * 1024;
+        nameSpaceCheck.call(this, arg[2]);
+        defaultConf.call(this);
+      }
+    } else throw new ReferenceError('the length of arguments in WebStorageProxy can not be 0');
+  }
+
   function override (WebStorageProxyPrototype) {
+    localStorage.setItem(WebStorageProxyPrototype._WEBSTORAGEPROXY_INDENT_STORAGE, WebStorageProxyPrototype._WEBSTORAGEPROXY_INDENT_LOCALSTORAGE);
+    sessionStorage.setItem(WebStorageProxyPrototype._WEBSTORAGEPROXY_INDENT_STORAGE, WebStorageProxyPrototype._WEBSTORAGEPROXY_INDENT_SESSIONSTORAGE);
     Storage.prototype[WebStorageProxyPrototype._CLEAR] = Storage.prototype.clear;
     Storage.prototype[WebStorageProxyPrototype._GETITEM] = Storage.prototype.getItem;
     Storage.prototype[WebStorageProxyPrototype._SETITEM] = Storage.prototype.setItem;
     Storage.prototype[WebStorageProxyPrototype._REMOVEITEM] = Storage.prototype.removeItem;
 
     var isPrivate = function isPrivate(key) {
-      return key.split(':')[0] === WebStorageProxyPrototype._WEBSTORAGEPROXY || key.split(':')[0] === WebStorageProxyPrototype._WEBSTORAGEPROXY_NAMESPACE || key.split(':')[0] === WebStorageProxyPrototype._WEBSTORAGEPROXY_STROAGE_OVERRODE;
+      return key.split(':')[0] === WebStorageProxyPrototype._WEBSTORAGEPROXY || key.split(':')[0] === WebStorageProxyPrototype._WEBSTORAGEPROXY_NAMESPACE || key.split(':')[0] === WebStorageProxyPrototype._WEBSTORAGEPROXY_INDENT_STORAGE || key.split(':')[0] === WebStorageProxyPrototype._WEBSTORAGEPROXY_STROAGE_OVERRODE;
     };
 
     Storage.prototype.clear = function () {
@@ -2564,7 +2556,15 @@
 
     Storage.prototype.setItem = function (key, value) {
       if (!isPrivate(key)) {
-        this[WebStorageProxyPrototype._SETITEM](key, value);
+        var oldValue = this[WebStorageProxyPrototype._GETITEM](key);
+
+        if (oldValue !== value) {
+          this[WebStorageProxyPrototype._SETITEM](key, value);
+
+          this[WebStorageProxyPrototype._GETITEM](WebStorageProxyPrototype._WEBSTORAGEPROXY_INDENT_STORAGE).match(/sessionStorage/i) || dispatch.call(this, 'sessionstoragechange', this, key, value, oldValue);
+          this[WebStorageProxyPrototype._GETITEM](WebStorageProxyPrototype._WEBSTORAGEPROXY_INDENT_STORAGE).match(/localStorage/i) || dispatch.call(this, 'localstoragechange', this, key, value, oldValue);
+          return true;
+        }
       }
 
       return false;
@@ -2579,67 +2579,52 @@
     };
   }
 
-  var WebStorageProxy =
-  /*#__PURE__*/
-  function () {
-    function WebStorageProxy() {
-      _classCallCheck(this, WebStorageProxy);
-
-      for (var _len = arguments.length, arg = new Array(_len), _key = 0; _key < _len; _key++) {
-        arg[_key] = arguments[_key];
-      }
-
-      return this.init(arg);
+  var WebStorageProxy = function WebStorageProxy() {
+    for (var _len = arguments.length, arg = new Array(_len), _key = 0; _key < _len; _key++) {
+      arg[_key] = arguments[_key];
     }
 
-    _createClass(WebStorageProxy, [{
-      key: "init",
-      value: function init(arg) {
-        var _this = this;
+    _classCallCheck(this, WebStorageProxy);
 
-        merge.call(this, arg); //合并配置项
+    return function (that) {
+      merge$1.call(that, arg); //合并配置项
 
-        if (sessionStorage.getItem(this._WEBSTORAGEPROXY_STROAGE_OVERRODE) === null) {
-          override(WebStorageProxy.prototype);
-        }
-
-        this.beforeCreate.call(window); //执行beforeCreate钩子函数
-
-        Promise.resolve().then(function () {
-          //挂载created钩子函数
-          _this.created();
-        });
-        this.state = Object.create(this); //定义当前对象的状态
-
-        this.state.map(); //将storage映射到state上
-
-        this.proxy();
-        return this.state;
+      if (sessionStorage.getItem(that._WEBSTORAGEPROXY_STROAGE_OVERRODE) === null) {
+        //检测Storage上的方法是否被重写
+        override(WebStorageProxy.prototype);
       }
-    }, {
-      key: "map",
-      value: function map() {
-        _map.call(this);
-      }
-    }, {
-      key: "proxy",
-      value: function proxy() {
-        _proxy.call(this);
-      }
-    }]);
 
-    return WebStorageProxy;
-  }();
+      that.beforeCreate.call(window); //执行beforeCreate钩子函数
 
-  WebStorageProxy.prototype._CLEAR = Symbol('clear');
-  WebStorageProxy.prototype._GETITEM = Symbol('getItem');
-  WebStorageProxy.prototype._SETITEM = Symbol('setItem');
-  WebStorageProxy.prototype._REMOVEITEM = Symbol('removeItem');
-  WebStorageProxy.prototype._WEBSTORAGEPROXY = '_WEBSTORAGEPROXY'; //WebStorageProxy对象控制的数据的私有前缀
+      Promise.resolve().then(function () {
+        //挂载created钩子函数
+        that.created();
+      });
+      that.state = Object.create(that); //定义当前对象的状态
 
-  WebStorageProxy.prototype._WEBSTORAGEPROXY_NAMESPACE = '_WEBSTORAGEPROXY_NAMESPACE'; //WebStorageProxy对象控制的具有命名空间的数据的私有前缀
+      map.call(that); //将storage映射到state上
 
-  WebStorageProxy.prototype._WEBSTORAGEPROXY_STROAGE_OVERRODE = '_WEBSTORAGEPROXY_STROAGE_OVERRODE'; //检测是否已经重写 Storage 的 key
+      proxy.call(that); //部署Proxy
+
+      return that.state;
+    }(this);
+  };
+
+  var prototype = (function (WebStorageProxy) {
+    WebStorageProxy.prototype._CLEAR = Symbol('clear');
+    WebStorageProxy.prototype._GETITEM = Symbol('getItem');
+    WebStorageProxy.prototype._SETITEM = Symbol('setItem');
+    WebStorageProxy.prototype._REMOVEITEM = Symbol('removeItem');
+    WebStorageProxy.prototype._WEBSTORAGEPROXY = '_WEBSTORAGEPROXY'; //WebStorageProxy对象控制的数据的私有前缀
+
+    WebStorageProxy.prototype._WEBSTORAGEPROXY_NAMESPACE = '_WEBSTORAGEPROXY_NAMESPACE'; //WebStorageProxy对象控制的具有命名空间的数据的私有前缀
+
+    WebStorageProxy.prototype._WEBSTORAGEPROXY_INDENT_STORAGE = '_WEBSTORAGEPROXY_INDENT_STORAGE';
+    WebStorageProxy.prototype._WEBSTORAGEPROXY_INDENT_LOCALSTORAGE = '_WEBSTORAGEPROXY_INDENT_LOCALSTORAGE';
+    WebStorageProxy.prototype._WEBSTORAGEPROXY_INDENT_SESSIONSTORAGE = '_WEBSTORAGEPROXY_INDENT_SESSIONSTORAGE';
+  });
+
+  prototype(WebStorageProxy); //在类的原型里放一些类的私有信息
 
   return WebStorageProxy;
 

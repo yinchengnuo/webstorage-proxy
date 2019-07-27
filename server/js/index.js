@@ -1,5 +1,5 @@
-localStorage.setItem('native1', 'native1');
-localStorage.setItem('native2', 'native2');
+localStorage.setItem('native1', JSON.stringify({ value: 'native1' }))
+localStorage.setItem('native2', JSON.stringify({ value: 'native2' }));
 
 sessionStorage.setItem('native1', 'value-native1');
 sessionStorage.setItem('native2', 'value-native2');
@@ -30,13 +30,13 @@ sessionStorage.setItem('_WEBSTORAGEPROXY_NAMESPACE:YinChengNuo', JSON.stringify(
 }));
 
 window.addEventListener('storage', e => {
-    console.log(e)
-})
-// let key = '0'
-// for (let i = 0; i < 1024 * 1024 * .5; i ++) {
-//     key += 0
-// }
-// sessionStorage.setItem(key, '')
+        console.log(e)
+    })
+    // let key = '0'
+    // for (let i = 0; i < 1024 * 1024 * .5; i ++) {
+    //     key += 0
+    // }
+    // sessionStorage.setItem(key, '')
 
 // let str = ''
 // for (let i = 0; i < 1024 * 100; i ++) {
@@ -66,34 +66,37 @@ const option = {
     //     return 'YinChengNuo'
     // },
     beforeCreate() {
-        console.log('钩子函数：beforedCreate, this is : ', this)  //OK
+        console.log('钩子函数：beforedCreate, this is : ', this) //OK
     },
     created() {
-        console.log('钩子函数：created, this is : ', this)  //OK
+        console.log('钩子函数：created, this is : ', this) //OK
     },
     beforeGet() {
-        console.log('钩子函数：beforeGet, this is : ', this)  //OK
+        console.log('钩子函数：beforeGet, this is : ', this) //OK
     },
     geted() {
-        console.log('钩子函数：geted, this is : ', this)  //OK
+        console.log('钩子函数：geted, this is : ', this) //OK
     },
     beforeSet() {
-        console.log('钩子函数：beforeSet, this is : ', this)  //OK
+        console.log('钩子函数：beforeSet, this is : ', this) //OK
     },
     proxySeted() {
-        console.log('钩子函数：proxySeted, this is : ', this)  //OK
+        console.log('钩子函数：proxySeted, this is : ', this) //OK
     },
     storageSeted() {
         console.log('钩子函数：storageSeted, this is : ', this)
+    },
+    storageChanged() {
+        onsole.log('钩子函数：storageChanged, this is : ', this)
+    },
+    beforeBeyond() {
+        console.log('钩子函数：beforeBeyond, this is : ', this)
     },
     beforeDestroy() {
         console.log('钩子函数：beforeDestroy, this is : ', this)
     },
     destroyed() {
         console.log('钩子函数：destroyed, this is : ', this)
-    },
-    beforeBeyond() {
-        console.log('钩子函数：beforeBeyond, this is : ', this)
     },
     encryption() {
 
@@ -105,3 +108,38 @@ const option = {
 const storage = new WebStorageProxy(option)
 document.write("<pre>" + JSON.stringify(storage, null, 8) + "</pre>")
 console.log(storage, 'WebStorageProxy对象')
+
+
+// setTimeout(() => {
+//     localStorage.removeItem('native1')
+// }, 2345)
+
+
+window.addEventListener('sessionstoragechange', e => {
+    console.log(e)
+})
+window.addEventListener('localstoragechange', e => {
+    console.log(e)
+})
+
+// setTimeout(() => {
+//     console.log('dispath')
+//     window.dispatchEvent(new StorageEvent('sessionstoragechang', {
+//         key: 'key',
+//         newValue: 'newValue',
+//         oldValue: 'oldValue',
+//         storageArea: sessionStorage,
+//         url: window.location.href.split('/')[0] + '//' + window.location.href.split('/')[2]
+//     }))
+// }, 2345)
+
+// const native = { a: 1 }
+
+// var arr = new Proxy(native, {
+//     get(target, key) {
+//         console.log(target, key, 'get')
+//     },
+//     set(target, key, value) {
+//         console.log(target, key, value, 'set')
+//     }
+// })

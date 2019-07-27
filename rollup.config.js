@@ -27,7 +27,7 @@ if (production) {
 }
 
 export default {
-    input: 'src/WebStorageProxy',
+    input: 'src/index',
     output,
     plugins: [
         commonjs(),
