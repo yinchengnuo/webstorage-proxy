@@ -29,9 +29,7 @@ sessionStorage.setItem('_WEBSTORAGEPROXY_NAMESPACE:YinChengNuo', JSON.stringify(
     sex: true
 }));
 
-window.addEventListener('storage', e => {
-        console.log(e)
-    })
+
     // let key = '0'
     // for (let i = 0; i < 1024 * 1024 * .5; i ++) {
     //     key += 0
@@ -71,11 +69,11 @@ const option = {
     created() {
         console.log('钩子函数：created, this is : ', this) //OK
     },
-    beforeGet() {
-        console.log('钩子函数：beforeGet, this is : ', this) //OK
+    beforeGet(targrt, key) {
+        console.log('钩子函数：beforeGet, key is : ', key) //OK
     },
-    geted() {
-        console.log('钩子函数：geted, this is : ', this) //OK
+    geted(targrt, key) {
+        console.log('钩子函数：geted, key is : ', key) //OK
     },
     beforeSet() {
         console.log('钩子函数：beforeSet, this is : ', this) //OK
@@ -89,31 +87,41 @@ const option = {
     storageChanged() {
         onsole.log('钩子函数：storageChanged, this is : ', this)
     },
-    beforeBeyond() {
-        console.log('钩子函数：beforeBeyond, this is : ', this)
-    },
+    // beforeBeyond() {
+    //     console.log('钩子函数：beforeBeyond, this is : ', this)
+    // },
     beforeDestroy() {
         console.log('钩子函数：beforeDestroy, this is : ', this)
     },
     destroyed() {
         console.log('钩子函数：destroyed, this is : ', this)
     },
-    encryption() {
-
-    },
-    decryption() {
-
-    }
 }
+
+const encryption = str => {
+    let string = escape(str)
+    let len = string.length;
+    let result = ''
+    for (let i = 0; i < len; i ++) {
+        result += String.fromCharCode(string.charCodeAt(i) + i)
+    }
+    return result
+}
+const decryption = str => {
+    let string = str
+    let len = string.length;
+    let result = ''
+    for (let i = 0; i < len; i ++) {
+        result += String.fromCharCode(string.charCodeAt(i) - i)
+    }
+    return unescape(result)
+}
+
+WebStorageProxy.encryption(encryption)
+WebStorageProxy.decryption(decryption)
+
 const storage = new WebStorageProxy(option)
 document.write("<pre>" + JSON.stringify(storage, null, 8) + "</pre>")
-console.log(storage, 'WebStorageProxy对象')
-
-
-// setTimeout(() => {
-//     localStorage.removeItem('native1')
-// }, 2345)
-
 
 window.addEventListener('sessionstoragechange', e => {
     console.log(e)
@@ -122,24 +130,24 @@ window.addEventListener('localstoragechange', e => {
     console.log(e)
 })
 
-// setTimeout(() => {
-//     console.log('dispath')
-//     window.dispatchEvent(new StorageEvent('sessionstoragechang', {
-//         key: 'key',
-//         newValue: 'newValue',
-//         oldValue: 'oldValue',
-//         storageArea: sessionStorage,
-//         url: window.location.href.split('/')[0] + '//' + window.location.href.split('/')[2]
-//     }))
-// }, 2345)
 
-// const native = { a: 1 }
+class Test {
+    constructor () {
+        this.name =  'Test'
+    }
+}
 
-// var arr = new Proxy(native, {
-//     get(target, key) {
-//         console.log(target, key, 'get')
-//     },
-//     set(target, key, value) {
-//         console.log(target, key, value, 'set')
-//     }
-// })
+Test.age = 18
+
+const TestProxy = new Proxy(Test, {
+    get (target, key) {
+        if (key === 'encryption') {
+            return fun => {
+                target.prototype.encryption = fun
+            }
+        }
+        return Reflect.get(target, key)
+    }
+})
+
+console.log(TestProxy)
