@@ -8,5 +8,17 @@
 </head>
 <body>
     sessionStorage
+    <script>
+        
+        sessionStorage.setItem('key', 'value')
+
+        Storage.prototype._setItem = Storage.prototype.setItem
+        Storage.prototype.setItem = new Proxy(Storage.prototype.setItem, {
+            get
+            apply(...args) {
+                console.log(args)
+            }
+        })
+    </script>
 </body>
 </html>

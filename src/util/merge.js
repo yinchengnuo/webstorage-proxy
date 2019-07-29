@@ -1,60 +1,37 @@
-import { nameSpaceCheck } from './util'
-const proxy = state => {
-    return new Proxy(state, {
-        set(target, key, value) {
-            if (key == target.length && typeof value === 'function') {
-                target[key] = value
-                target.length = target.length += 1
-                return true
-            }
-        },
-        deleteProperty() {
-            return false
-        }
-    })
-}
-const ret0 = () => ({ length: 0 })
-const ret1 = fun => ({
-    0: fun,
-    length: 1
-})
-const defaultConf = function() {
-    this.beforeCreate = function() {}
-    this.created = function() {}
-    this.beforeGet = proxy(ret0())
-    this.geted = proxy(ret0())
-    this.beforeSet = proxy(ret0())
-    this.proxySeted = proxy(ret0())
-    this.storageSeted = proxy(ret0())
-    this.storageChanged = proxy(ret0())
-    this.beforeDestroy = function() {}
-    this.destroyed = function() {}
-}
-export default function(arg) {
-    if (arg.length) {
-        if (arg.length == 1) {
-            if (typeof arg[0] === 'string') {
-                this._TYPE = arg[0]
-                this._NAMESPACE = null
-                defaultConf.call(this)
-            } else if (arg[0].toString() === '[object Object]') {
-                this._TYPE = arg[0].type
-                nameSpaceCheck(this, arg[0].nameSpace)
-                typeof arg[0].beforeCreate === 'function' ? this.beforeCreate = arg[0].beforeCreate : function() {}
-                typeof arg[0].created === 'function' ? this.created = arg[0].created : function() {}
-                typeof arg[0].beforeGet === 'function' ? this.beforeGet = proxy(ret1(arg[0].beforeGet)) : proxy(ret0())
-                typeof arg[0].geted === 'function' ? this.geted = proxy(ret1(arg[0].geted)) : proxy(ret0())
-                typeof arg[0].beforeSet === 'function' ? this.beforeSet = proxy(ret1(arg[0].beforeSet)) : proxy(ret0())
-                typeof arg[0].proxySeted === 'function' ? this.proxySeted = proxy(ret1(arg[0].proxySeted)) : proxy(ret0())
-                typeof arg[0].storageSeted === 'function' ? this.storageSeted = proxy(ret1(arg[0].storageSeted)) : proxy(ret0())
-                typeof arg[0].storageChanged === 'function' ? this.storageChanged = proxy(ret1(arg[0].storageChanged)) : proxy(ret0())
-                typeof arg[0].beforeDestroy === 'function' ? this.beforeDestroy = arg[0].beforeDestroy : function() {}
-                typeof arg[0].destroyed === 'function' ? this.destroyed = arg[0].destroyed : function() {}
-            }
-        } else {
+import { 
+    ret0,  //初始化时没有配置钩子函数时返回的钩子函数列表
+    ret1,  //初始化时配置钩子函数时返回的钩子函数列表
+    isString,  //类型判断：string
+    isObject,  //类型判断：object
+    isFunction, //类型判断：function
+    nameSpaceCheck,  //检测命名空间类型，如果为字符串就直接赋值,如果为函数就执行，并把所有已经存在的命名空间名称放在数组作为参数传入
+    defaultLifeCircle,  //初始化时没有配置任何钩子函数时的默认操作
+    proxyLifeCircleList,  //代理钩子列表使得只能添加不能删除钩子函数
+} from './util'
+
+export default function(arg) {  //合并配置项
+    if (arg.length == 1) {  //当只有一个参数时
+        if (isString(arg[0])) {  //当参数为唯一的字符串时
             this._TYPE = arg[0]
-            nameSpaceCheck(this, arg[2])
-            defaultConf.call(this)
+            this._NAMESPACE = null
+            defaultLifeCircle(this)
+        } else if (isObject(arg[0])) {  //当参数为唯一的对象时
+            this._TYPE = arg[0].type
+            nameSpaceCheck(this, arg[0].nameSpace)
+            this.beforeCreate = isFunction(arg[0].beforeCreate) ?  arg[0].beforeCreate : function() {}
+            this.created = isFunction(arg[0].created) ?  arg[0].created : function() {}
+            this.beforeGet = isFunction(arg[0].beforeGet) ?  proxyLifeCircleList(ret1(arg[0].beforeGet)) : proxyLifeCircleList(ret0())
+            this.geted = isFunction(arg[0].geted) ?  proxyLifeCircleList(ret1(arg[0].geted)) : proxyLifeCircleList(ret0())
+            this.beforeSet = isFunction(arg[0].beforeSet) ?  proxyLifeCircleList(ret1(arg[0].beforeSet)) : proxyLifeCircleList(ret0())
+            this.proxySeted = isFunction(arg[0].proxySeted) ?  proxyLifeCircleList(ret1(arg[0].proxySeted)) : proxyLifeCircleList(ret0())
+            this.storageSeted = isFunction(arg[0].storageSeted) ?  proxyLifeCircleList(ret1(arg[0].storageSeted)) : proxyLifeCircleList(ret0())
+            this.storageChanged = isFunction(arg[0].storageChanged) ?  proxyLifeCircleList(ret1(arg[0].storageChanged)) : proxyLifeCircleList(ret0())
+            this.beforeDestroy = isFunction(arg[0].beforeDestroy) ?  arg[0].beforeDestroy : function() {}
+            this.destroyed = isFunction(arg[0].destroyed) ?  arg[0].destroyed : function() {}
         }
-    } else throw new ReferenceError('the length of arguments in WebStorageProxy can not be 0')
+    } else {  //当参数大于一时
+        this._TYPE = arg[0]
+        nameSpaceCheck(this, arg[2])
+        defaultLifeCircle(this)
+    }
 }

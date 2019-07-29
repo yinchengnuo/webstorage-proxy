@@ -1,26 +1,25 @@
 import all from './prototype/all'
+// import use from './prototype/use'
+// import del from './prototype/del'
+// import has from './prototype/has'
+// import clear from './prototype/clear'
 
 import map from './util/map'
 import proxy from './util/proxy'
 import merge from './util/merge'
-import rewrite from './util/rewrite'
 
-export default class WebStorageProxy {
+export default class WebStorageProxy {  //WebStorageProxy 本尊
     constructor(...arg) {
-        return ((that) => {
-            merge.call(that, arg) //合并配置项
-            if (!Storage.prototype[WebStorageProxy.prototype._GETITEM]) {  //检测Storage上的方法是否被重写
-                console.log(88888888)
-                rewrite(WebStorageProxy.prototype)
-            }
-            that.beforeCreate.call(window) //执行beforeCreate钩子函数
+        return (self => {
+            merge.call(self, arg) //合并配置项
+            self.beforeCreate.call(window) //执行beforeCreate钩子函数
+            self.state = Object.create(self) //定义当前对象的状态
+            map.call(self) //将storage映射到state上
+            proxy.call(self)  //在state上部署Proxy
             Promise.resolve().then(() => { //挂载created钩子函数
-                that.created()
+                self.created()  //执行created钩子函数
             })
-            that.state = Object.create(that) //定义当前对象的状态
-            map.call(that) //将storage映射到state上
-            proxy.call(that)  //部署Proxy
-            return that.state 
+            return self.state   //返回state
         })(this)
     }
     all () {
