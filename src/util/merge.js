@@ -25,6 +25,9 @@ export default function(arg) {  //合并配置项
             this.beforeSet = isFunction(arg[0].beforeSet) ?  proxyLifeCircleList(ret1(arg[0].beforeSet)) : proxyLifeCircleList(ret0())
             this.proxySeted = isFunction(arg[0].proxySeted) ?  proxyLifeCircleList(ret1(arg[0].proxySeted)) : proxyLifeCircleList(ret0())
             this.storageSeted = isFunction(arg[0].storageSeted) ?  proxyLifeCircleList(ret1(arg[0].storageSeted)) : proxyLifeCircleList(ret0())
+            this.beforeDel = isFunction(arg[0].beforeDel) ?  proxyLifeCircleList(ret1(arg[0].beforeDel)) : proxyLifeCircleList(ret0())
+            this.proxyDeled = isFunction(arg[0].proxyDeled) ?  proxyLifeCircleList(ret1(arg[0].proxyDeled)) : proxyLifeCircleList(ret0())
+            this.storageDeled = isFunction(arg[0].storageDeled) ?  proxyLifeCircleList(ret1(arg[0].storageDeled)) : proxyLifeCircleList(ret0())
             this.storageChanged = isFunction(arg[0].storageChanged) ?  proxyLifeCircleList(ret1(arg[0].storageChanged)) : proxyLifeCircleList(ret0())
             this.beforeDestroy = isFunction(arg[0].beforeDestroy) ?  arg[0].beforeDestroy : function() {}
             this.destroyed = isFunction(arg[0].destroyed) ?  arg[0].destroyed : function() {}

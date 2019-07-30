@@ -41,14 +41,26 @@ export default function() {  //递归代理state
                             target[key] = value
                         }
                         callLifeCircleList(self.proxySeted, target, target, key, value)  //遍历执行proxySeted钩子函数列表
-                        // console.log('更新storage', target, key, value)
-                        if (update.call(self, oldState)) 
-                        {callLifeCircleList(self.storageSeted, target, target, key, value)}
+                        update.call(self, oldState, target, key, value)  //更新storage
+                        callLifeCircleList(self.storageSeted, target, target, key, value)  //遍历执行storageSeted钩子函数列表
                     }
                 }
             },
-            deleteProperty () {
-                 
+            deleteProperty (target, key) {
+                if (key in target) {
+                    console.log(key)
+                    if (key === '_WEBSTORAGEPROXY_INDENT_STORAGE') {
+                        return false
+                    }
+                    const oldState = JSON.parse(JSON.stringify(self.state))  //set赋值之前先备份当前state
+                    callLifeCircleList(self.beforeDel, target, target, key)  //遍历执行beforeSet钩子函数列表
+                    Reflect.deleteProperty(target, key)
+                    callLifeCircleList(self.proxyDeled, target, target, key)  //遍历执行proxySeted钩子函数列表
+                    update.call(self, oldState, target, key)  //更新storage
+                    callLifeCircleList(self.storageDeled, target, target, key)  //遍历执行storageSeted钩子函数列表
+                    return true
+                }
+                return false
             }
         })
     }

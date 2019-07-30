@@ -87,6 +87,9 @@
     that.beforeSet = proxyLifeCircleList(ret0());
     that.proxySeted = proxyLifeCircleList(ret0());
     that.storageSeted = proxyLifeCircleList(ret0());
+    that.beforeDel = proxyLifeCircleList(ret0());
+    that.proxyDeled = proxyLifeCircleList(ret0());
+    that.storageDeled = proxyLifeCircleList(ret0());
     that.storageChanged = proxyLifeCircleList(ret0());
 
     that.beforeDestroy = function () {};
@@ -102,6 +105,20 @@
       storageArea: that,
       url: window.location.href.split('/')[0] + '//' + window.location.href.split('/')[2]
     }));
+  };
+  var nameSpaceDispatch = function nameSpaceDispatch(that, type, storageArea, key, newValue, oldValue) {
+    //触发sessionstoragechange/localstoragechange事件
+    var len = that.storageChanged.length;
+
+    for (var i = 0; i < len; i++) {
+      that.storageChanged[i].call(that, new StorageEvent(type, {
+        key: key,
+        newValue: newValue,
+        oldValue: oldValue,
+        storageArea: storageArea,
+        url: window.location.href.split('/')[0] + '//' + window.location.href.split('/')[2]
+      }));
+    }
   };
   var nameSpaceCheck = function nameSpaceCheck(that, nameSpace) {
     //检测命名空间类型，
@@ -188,20 +205,43 @@
     }
   }
 
-  function update () {
+  function update (oldValue) {
+    var storage = window[this._TYPE];
+    var key = arguments.length <= 2 ? undefined : arguments[2];
+
+    var value = storage[this._GETITEM](key);
+
     if (this._NAMESPACE) {
-      var storage = window[this._TYPE];
-      var key = "".concat(this._WEBSTORAGEPROXY_NAMESPACE, ":").concat(this._NAMESPACE);
+      var spacename = "_WEBSTORAGEPROXY_INDENT_STORAGE:".concat(this._NAMESPACE);
 
-      var value = window[this._TYPE][this._GETITEM](key);
+      storage[this._SETITEM](spacename, this.encryption(JSON.stringify(this.state)));
 
-      storage[this._SETITEM](key, this.encryption(JSON.stringify(this.state)));
+      nameSpaceDispatch.call(storage, this, this._TYPE.toLowerCase() + 'change', storage, spacename, this.encryption(JSON.stringify(this.state)), value); // dispatch.call(storage, this._TYPE.toLowerCase() + 'change', storage, spacename, this.encryption(JSON.stringify(this.state)), value)  //开发时使用
 
-      dispatch.call(storage, this._TYPE.toLowerCase() + 'change', storage, key, this.encryption(JSON.stringify(this.state)), value);
       storage = null;
       key = null;
       value = null;
       return true;
+    } else {
+      var keys = Object.keys(this.state);
+
+      for (var i = 0; i < keys.length; i++) {
+        if (isArray(this.state[keys[i]]) || isObject(this.state[keys[i]])) {
+          if (JSON.stringify(oldValue[keys[i]]) !== JSON.stringify(this.state[keys[i]])) {
+            storage[this._SETITEM](key, JSON.stringify(this.state[keys[i]]));
+
+            dispatch.call(storage, this._TYPE.toLowerCase() + 'change', storage, key, JSON.stringify(this.state[keys[i]]), value);
+            return true;
+          }
+        } else {
+          if (oldValue[keys[i]] !== this.state[keys[i]]) {
+            storage[this._SETITEM](key, this.state[keys[i]]);
+
+            dispatch.call(storage, this._TYPE.toLowerCase() + 'change', storage, key, JSON.stringify(this.state[keys[i]]), value);
+            return true;
+          }
+        }
+      }
     }
   }
 
@@ -256,15 +296,37 @@
               }
 
               callLifeCircleList(self.proxySeted, target, target, key, value); //遍历执行proxySeted钩子函数列表
-              // console.log('更新storage', target, key, value)
 
-              if (update.call(self, oldState)) {
-                callLifeCircleList(self.storageSeted, target, target, key, value);
-              }
+              update.call(self, oldState, target, key, value); //更新storage
+
+              callLifeCircleList(self.storageSeted, target, target, key, value); //遍历执行storageSeted钩子函数列表
             }
           }
         },
-        deleteProperty: function deleteProperty() {}
+        deleteProperty: function deleteProperty(target, key) {
+          if (key in target) {
+            console.log(key);
+
+            if (key === '_WEBSTORAGEPROXY_INDENT_STORAGE') {
+              return false;
+            }
+
+            var oldState = JSON.parse(JSON.stringify(self.state)); //set赋值之前先备份当前state
+
+            callLifeCircleList(self.beforeDel, target, target, key); //遍历执行beforeSet钩子函数列表
+
+            Reflect.deleteProperty(target, key);
+            callLifeCircleList(self.proxyDeled, target, target, key); //遍历执行proxySeted钩子函数列表
+
+            update.call(self, oldState, target, key); //更新storage
+
+            callLifeCircleList(self.storageDeled, target, target, key); //遍历执行storageSeted钩子函数列表
+
+            return true;
+          }
+
+          return false;
+        }
       });
     };
 
@@ -291,6 +353,9 @@
         this.beforeSet = isFunction(arg[0].beforeSet) ? proxyLifeCircleList(ret1(arg[0].beforeSet)) : proxyLifeCircleList(ret0());
         this.proxySeted = isFunction(arg[0].proxySeted) ? proxyLifeCircleList(ret1(arg[0].proxySeted)) : proxyLifeCircleList(ret0());
         this.storageSeted = isFunction(arg[0].storageSeted) ? proxyLifeCircleList(ret1(arg[0].storageSeted)) : proxyLifeCircleList(ret0());
+        this.beforeDel = isFunction(arg[0].beforeDel) ? proxyLifeCircleList(ret1(arg[0].beforeDel)) : proxyLifeCircleList(ret0());
+        this.proxyDeled = isFunction(arg[0].proxyDeled) ? proxyLifeCircleList(ret1(arg[0].proxyDeled)) : proxyLifeCircleList(ret0());
+        this.storageDeled = isFunction(arg[0].storageDeled) ? proxyLifeCircleList(ret1(arg[0].storageDeled)) : proxyLifeCircleList(ret0());
         this.storageChanged = isFunction(arg[0].storageChanged) ? proxyLifeCircleList(ret1(arg[0].storageChanged)) : proxyLifeCircleList(ret0());
         this.beforeDestroy = isFunction(arg[0].beforeDestroy) ? arg[0].beforeDestroy : function () {};
         this.destroyed = isFunction(arg[0].destroyed) ? arg[0].destroyed : function () {};

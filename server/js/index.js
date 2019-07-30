@@ -3,7 +3,7 @@ const encryption = str => {
     let len = string.length;
     let result = ''
     for (let i = 0; i < len; i ++) {
-        result += String.fromCharCode(string.charCodeAt(i) + i + 2019)
+        result += String.fromCharCode(string.charCodeAt(i) + i + 23)
     }
     return result
 }
@@ -12,7 +12,7 @@ const decryption = str => {
     let len = string.length;
     let result = ''
     for (let i = 0; i < len; i ++) {
-        result += String.fromCharCode(string.charCodeAt(i) - i - 2019)
+        result += String.fromCharCode(string.charCodeAt(i) - i - 23)
     }
     return unescape(result)
 }
@@ -77,10 +77,9 @@ sessionStorage.setItem('_WEBSTORAGEPROXY_NAMESPACE:YinChengNuo', encryption(JSON
 
 const option = {
     type: 'sessionStorage',
-    maxSpace: 4,
-    nameSpace: (nameSpaces) => {
-        return nameSpaces[0]
-    },
+    // nameSpace: (nameSpaces) => {
+    //     return nameSpaces[0]
+    // },
     beforeCreate() {
         console.log('钩子函数：beforedCreate, this is : ', this) //OK
     },
@@ -94,16 +93,25 @@ const option = {
     //     console.log('钩子函数：geted, key is : ', key) //OK
     // },
     beforeSet() {
-        console.log('钩子函数：beforeSet, this is : ', this) //OK
+        console.log('钩子函数：beforeSet')
     },
     proxySeted() {
-        console.log('钩子函数：proxySeted, this is : ', this) //OK
+        console.log('钩子函数：proxySeted')
     },
     storageSeted() {
         console.log('钩子函数：storageSeted')
     },
+    beforeDel() {
+        console.log('钩子函数：beforeSet')
+    },
+    proxyDeled() {
+        console.log('钩子函数：proxySeted')
+    },
+    storageDeled() {
+        console.log('钩子函数：storageSeted')
+    },
     storageChanged() {
-        onsole.log('钩子函数：storageChanged, this is : ', this)
+        console.log('钩子函数：storageChanged')
     },
     // beforeBeyond() {
     //     console.log('钩子函数：beforeBeyond, this is : ', this)

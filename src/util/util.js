@@ -38,6 +38,9 @@ export const defaultLifeCircle = that => {  //初始化时没有配置任何钩�
     that.beforeSet = proxyLifeCircleList(ret0())
     that.proxySeted = proxyLifeCircleList(ret0())
     that.storageSeted = proxyLifeCircleList(ret0())
+    that.beforeDel = proxyLifeCircleList(ret0())
+    that.proxyDeled = proxyLifeCircleList(ret0())
+    that.storageDeled = proxyLifeCircleList(ret0())
     that.storageChanged = proxyLifeCircleList(ret0())
     that.beforeDestroy = function() {}
     that.destroyed = function() {}
@@ -50,6 +53,18 @@ export const dispatch = (type, that, key, newValue, oldValue) => {  //触发sess
         storageArea: that,
         url: window.location.href.split('/')[0] + '//' + window.location.href.split('/')[2]
     }))
+}
+export const nameSpaceDispatch = (that, type, storageArea, key, newValue, oldValue) => {  //触发sessionstoragechange/localstoragechange事件
+    let len = that.storageChanged.length
+    for(let i = 0; i < len; i ++) {
+        that.storageChanged[i].call(that, new StorageEvent(type, {
+            key,
+            newValue,
+            oldValue,
+            storageArea,
+            url: window.location.href.split('/')[0] + '//' + window.location.href.split('/')[2]       
+        }))
+    }
 }
 export const nameSpaceCheck = (that, nameSpace) => {  //检测命名空间类型，
     if (typeof nameSpace === 'string') {  //如果为字符串就直接赋值
