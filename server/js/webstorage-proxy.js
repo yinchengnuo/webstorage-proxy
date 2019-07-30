@@ -28,10 +28,6 @@
     return Constructor;
   }
 
-  function _all () {
-    return JSON.parse(JSON.stringify(this.state));
-  }
-
   var ret0 = function ret0() {
     return {
       length: 0
@@ -59,7 +55,7 @@
   };
   var lifeCircleNameCheck = function lifeCircleNameCheck(name) {
     //检查要追加或获取的钩子函数名称是否存在
-    return name === 'beforeGet' || name === 'geted' || name === 'beforeSet' || name === 'proxySeted' || name === 'storageSeted' || name === 'storageChanged';
+    return name === 'beforeGet' || name === 'geted' || name === 'beforeSet' || name === 'proxySeted' || name === 'storageSeted' || name === 'storageChanged' || name === '_NAMESPACE' || name === '_DELETENOMAPTOSTORAGE';
   };
   var proxyLifeCircleList = function proxyLifeCircleList(state) {
     //代理钩子列表使得只能添加不能删除钩子函数
@@ -159,9 +155,30 @@
     //类型判断：array
     return Object.prototype.toString.call(i) === '[object Array]';
   };
+  var isPrivate = function isPrivate(proto, key) {
+    //判断要操作的 key 值是否允许操作
+    return key.split(':')[0] === proto._WEBSTORAGEPROXY_NAMESPACE || key.split(':')[0] === proto._WEBSTORAGEPROXY_INDENT_STORAGE;
+  };
   var proto = function proto(i) {
     //获取对象原型
     return Object.getPrototypeOf(i);
+  };
+  var listen = function listen(that) {
+    window.addEventListener('storage', function (e) {
+      if (that._NAMESPACE) {
+        var regExp = new RegExp("".concat(that._WEBSTORAGEPROXY_NAMESPACE, ":"));
+
+        if (e.key.match(regExp) && e.key.split(':')[1] === that._NAMESPACE) {
+          if (isFunction(that.decryption)) {
+            Object.assign(that.state, JSON.parse(that.decryption(e.newValue)));
+          }
+        }
+      } else {
+        if (!isPrivate(e.key)) {
+          that.state[e.key] = e.newValue;
+        }
+      }
+    });
   };
 
   function map () {
@@ -280,6 +297,10 @@
           if (isFunction(value) && lifeCircleNameCheck(key) && proto(state) === self) {
             //当key为钩子函数时将其放入钩子函数列表
             self[key][self[key].length] = value;
+            return true;
+          } else if (lifeCircleNameCheck(key)) {
+            Reflect.set(target, key, value);
+            return true;
           } else {
             if (target[key] !== value) {
               //当newValue !== oldValue 时才进行下一步
@@ -295,6 +316,7 @@
                 target[key] = value;
               }
 
+              return true;
               callLifeCircleList(self.proxySeted, target, target, key, value); //遍历执行proxySeted钩子函数列表
 
               update.call(self, oldState, target, key, value); //更新storage
@@ -302,11 +324,11 @@
               callLifeCircleList(self.storageSeted, target, target, key, value); //遍历执行storageSeted钩子函数列表
             }
           }
+
+          return false;
         },
         deleteProperty: function deleteProperty(target, key) {
-          if (key in target) {
-            console.log(key);
-
+          if (key in target && !self._DELETENOMAPTOSTORAGE) {
             if (key === '_WEBSTORAGEPROXY_INDENT_STORAGE') {
               return false;
             }
@@ -322,6 +344,9 @@
 
             callLifeCircleList(self.storageDeled, target, target, key); //遍历执行storageSeted钩子函数列表
 
+            return true;
+          } else if (self._DELETENOMAPTOSTORAGE) {
+            Reflect.deleteProperty(target, key);
             return true;
           }
 
@@ -394,6 +419,7 @@
           //挂载created钩子函数
           self.created(); //执行created钩子函数
         });
+        self._TYPE === 'localStorage' && listen(self);
         return self.state; //返回state
       }(this);
     }
@@ -401,20 +427,91 @@
     _createClass(WebStorageProxy, [{
       key: "all",
       value: function all() {
-        return _all.call(this);
+        return JSON.parse(JSON.stringify(this.state));
       }
     }, {
       key: "use",
-      value: function use() {}
+      value: function use(namespace) {
+        var _this = this;
+
+        if (namespace && namespace !== this._NAMESPACE) {
+          proto(this)._DELETENOMAPTOSTORAGE = true;
+          proto(this)._NAMESPACE = namespace;
+          var keys = Object.keys(this.state);
+          keys.forEach(function (e) {
+            return delete _this.state[e];
+          });
+          map.call(this);
+          proto(this)._DELETENOMAPTOSTORAGE = false;
+          keys = null;
+          return true;
+        }
+      }
     }, {
       key: "del",
-      value: function del() {}
+      value: function del(namespace) {
+        this._NAMESPACEe && this._NAMESPACE === namespace && this.use();
+
+        window[this._TYPE][proto(this)._REMOVEITEM]("".concat(this._WEBSTORAGEPROXY_NAMESPACE, ":").concat(namespace));
+
+        return true;
+      }
     }, {
       key: "has",
-      value: function has() {}
+      value: function has(key) {
+        return key in this.state;
+      }
     }, {
       key: "clear",
-      value: function clear() {}
+      value: function clear() {
+        var _this2 = this;
+
+        if (this._NAMESPACE) {
+          window[this._TYPE][proto(this)._SETITEM]("".concat(this._WEBSTORAGEPROXY_NAMESPACE, ":").concat(this._NAMESPACE), '');
+
+          return true;
+        }
+
+        var clear = function clear(i) {
+          while (i < window[_this2._TYPE].length) {
+            if (isPrivate(proto(_this2), window[_this2._TYPE].key(i))) {
+              i++;
+            } else {
+              window[_this2._TYPE].removeItem(window[_this2._TYPE].key(i));
+            }
+          }
+
+          return clear;
+        };
+
+        clear(0)(0);
+        return true;
+      }
+    }, {
+      key: "namespace",
+      value: function namespace() {
+        return this._NAMESPACE;
+      }
+    }, {
+      key: "namespaces",
+      value: function namespaces() {
+        var arr = [];
+        var storage = window[this._TYPE];
+        var len = storage.length;
+
+        for (var i = 0; i < len; i++) {
+          if (window[this._TYPE].key(i).split(':')[0] === proto(this)._WEBSTORAGEPROXY_NAMESPACE) {
+            arr.push(window[this._TYPE].key(i).split(':')[1]);
+          }
+        }
+
+        Promise.resolve().then(function () {
+          arr = null;
+          storage = null;
+          len = null;
+        });
+        return arr;
+      }
     }]);
 
     return WebStorageProxy;
@@ -452,29 +549,26 @@
     Storage.prototype[proto._SETITEM] = Storage.prototype.setItem;
     Storage.prototype[proto._REMOVEITEM] = Storage.prototype.removeItem;
 
-    var isPrivate = function isPrivate(key) {
-      return key.split(':')[0] === proto._WEBSTORAGEPROXY_NAMESPACE || key.split(':')[0] === proto._WEBSTORAGEPROXY_INDENT_STORAGE;
-    };
-
     Storage.prototype.clear = function () {
       var _this = this;
 
       var clear = function clear(i) {
         while (i < _this.length) {
-          if (!isPrivate(_this.key(i))) {
+          if (!isPrivate(proto, _this.key(i))) {
             _this[proto._REMOVEITEM](_this.key(i));
           } else {
             i++;
           }
         }
+
+        return clear;
       };
 
-      clear(0);
-      clear(0);
+      clear(0)(0);
     };
 
     Storage.prototype.getItem = function (key) {
-      if (!isPrivate(key)) {
+      if (!isPrivate(proto, key)) {
         return this[proto._GETITEM](key);
       }
 
@@ -482,7 +576,7 @@
     };
 
     Storage.prototype.setItem = function (key, value) {
-      if (!isPrivate(key)) {
+      if (!isPrivate(proto, key)) {
         var oldValue = this[proto._GETITEM](key);
 
         if (oldValue !== value) {
@@ -498,7 +592,7 @@
     };
 
     Storage.prototype.removeItem = function (key) {
-      if (!isPrivate(key)) {
+      if (!isPrivate(proto, key)) {
         var oldValue = this[proto._GETITEM](key);
 
         if (oldValue !== null) {

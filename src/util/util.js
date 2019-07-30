@@ -14,7 +14,9 @@ export const lifeCircleNameCheck = name => {  //检查要追加或获取的钩�
     name === 'beforeSet' ||
     name === 'proxySeted' ||
     name === 'storageSeted' ||
-    name === 'storageChanged' 
+    name === 'storageChanged' ||
+    name === '_NAMESPACE' ||
+    name === '_DELETENOMAPTOSTORAGE'
 }
 export const proxyLifeCircleList = state => {  //代理钩子列表使得只能添加不能删除钩子函数
     return new Proxy(state, {
@@ -96,6 +98,25 @@ export const isObject = i => {  //类型判断：object
 export const isArray = i => {  //类型判断：array
     return Object.prototype.toString.call(i) === '[object Array]'
 }
+export const isPrivate = (proto, key) => {  //判断要操作的 key 值是否允许操作
+    return (key.split(':')[0] === proto._WEBSTORAGEPROXY_NAMESPACE) || (key.split(':')[0] === proto._WEBSTORAGEPROXY_INDENT_STORAGE)
+}
 export const proto = i => {  //获取对象原型
     return Object.getPrototypeOf(i)
+}
+export const listen = that => {
+    window.addEventListener('storage', e => {
+        if (that._NAMESPACE) {
+            let regExp = new RegExp(`${that._WEBSTORAGEPROXY_NAMESPACE}:`)
+            if (e.key.match(regExp) && e.key.split(':')[1] === that._NAMESPACE) {
+                if (isFunction(that.decryption)) {
+                    Object.assign(that.state, JSON.parse(that.decryption(e.newValue)))
+                }
+            }
+        } else {
+            if (!isPrivate(e.key)) {
+                that.state[e.key] = e.newValue
+            }
+        }
+    })
 }

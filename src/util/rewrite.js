@@ -1,4 +1,4 @@
-import { dispatch } from './util'
+import { dispatch, isPrivate } from './util'
 
 export default function(proto) {
     localStorage.setItem(proto._WEBSTORAGEPROXY_INDENT_STORAGE, proto._WEBSTORAGEPROXY_INDENT_LOCALSTORAGE)
@@ -7,28 +7,27 @@ export default function(proto) {
     Storage.prototype[proto._GETITEM] = Storage.prototype.getItem
     Storage.prototype[proto._SETITEM] = Storage.prototype.setItem
     Storage.prototype[proto._REMOVEITEM] = Storage.prototype.removeItem
-    const isPrivate = key => (key.split(':')[0] === proto._WEBSTORAGEPROXY_NAMESPACE) || (key.split(':')[0] === proto._WEBSTORAGEPROXY_INDENT_STORAGE)
     Storage.prototype.clear = function() {
         const clear = i => {
             while (i < this.length) {
-                if (!isPrivate(this.key(i))) {
+                if (!isPrivate(proto, this.key(i))) {
                     this[proto._REMOVEITEM](this.key(i))
                 } else {
                     i++
                 }
             }
+            return clear
         }
-        clear(0)
-        clear(0)
+        clear(0)(0)
     }
     Storage.prototype.getItem = function(key) {
-        if (!isPrivate(key)) {
+        if (!isPrivate(proto, key)) {
             return this[proto._GETITEM](key)
         }
         return false
     }
     Storage.prototype.setItem = function(key, value) {
-        if (!isPrivate(key)) {
+        if (!isPrivate(proto, key)) {
             let oldValue = this[proto._GETITEM](key)
             if (oldValue !== value) {
                 this[proto._SETITEM](key, value)
@@ -40,7 +39,7 @@ export default function(proto) {
         return false
     }
     Storage.prototype.removeItem = function(key) {
-        if (!isPrivate(key)) {
+        if (!isPrivate(proto, key)) {
             let oldValue = this[proto._GETITEM](key)
             if (oldValue !== null) {
                 this[proto._REMOVEITEM](key)

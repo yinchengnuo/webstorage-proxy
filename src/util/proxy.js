@@ -31,6 +31,10 @@ export default function() {  //递归代理state
             set(target, key, value) {  //代理set
                 if (isFunction(value) && lifeCircleNameCheck(key) && proto(state) === self) {  //当key为钩子函数时将其放入钩子函数列表
                     self[key][self[key].length] = value
+                    return true
+                } else if (lifeCircleNameCheck(key)) {
+                    Reflect.set(target, key, value)
+                    return true
                 } else { 
                     if (target[key] !== value) {  //当newValue !== oldValue 时才进行下一步
                         callLifeCircleList(self.beforeSet, target, target, key, value)  //遍历执行beforeSet钩子函数列表
@@ -40,15 +44,16 @@ export default function() {  //递归代理state
                         } else {  //当set的属性值为原始值时直接赋值
                             target[key] = value
                         }
+                        return true
                         callLifeCircleList(self.proxySeted, target, target, key, value)  //遍历执行proxySeted钩子函数列表
                         update.call(self, oldState, target, key, value)  //更新storage
                         callLifeCircleList(self.storageSeted, target, target, key, value)  //遍历执行storageSeted钩子函数列表
                     }
                 }
+                return false
             },
             deleteProperty (target, key) {
-                if (key in target) {
-                    console.log(key)
+                if (key in target && !self._DELETENOMAPTOSTORAGE) {
                     if (key === '_WEBSTORAGEPROXY_INDENT_STORAGE') {
                         return false
                     }
@@ -58,6 +63,9 @@ export default function() {  //递归代理state
                     callLifeCircleList(self.proxyDeled, target, target, key)  //遍历执行proxySeted钩子函数列表
                     update.call(self, oldState, target, key)  //更新storage
                     callLifeCircleList(self.storageDeled, target, target, key)  //遍历执行storageSeted钩子函数列表
+                    return true
+                } else if (self._DELETENOMAPTOSTORAGE) {
+                    Reflect.deleteProperty(target, key)
                     return true
                 }
                 return false

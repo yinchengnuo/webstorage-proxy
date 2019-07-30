@@ -9,10 +9,12 @@
 </head>
 
 <body>
+    <script src="/js/webstorage-proxy.js"></script>
     <script>
-        window.addEventListener('storage', e => {
-            console.log(e)
-        })
+        const storage = new WebStorageProxy('localStorage')
+        storage.storageChanged = e => {
+            console.log('listened')
+        }
     </script>
 </body>
 

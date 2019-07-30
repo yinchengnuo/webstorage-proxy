@@ -159,21 +159,27 @@ window.addEventListener('localstoragechange', e => {
 // console.log(TestProxy)
 
 
-function Test () {
-    Test.setItem = Symbol('setItem')
-    console.log(Test.setItem)
-    return Test.setItem    
-}
-Test.call(window)
+// function Test () {
+//     Test.setItem = Symbol('setItem')
+//     console.log(Test.setItem)
+//     return Test.setItem    
+// }
+// Test.call(window)
 
-const s = new Proxy(Test, {
-    get (target, key) {
-        if (key === 'setItem') {
-            return false
-        }
-        return Reflect.get(target, key)
-    },
-    // apply () {
+// const s = new Proxy(Test, {
+//     get (target, key) {
+//         if (key === 'setItem') {
+//             return false
+//         }
+//         return Reflect.get(target, key)
+//     },
+//     // apply () {
 
-    // }
-})
+//     // }
+// })
+
+setTimeout(() => {
+    console.log('dispatchEvent')
+    localStorage.setItem('test', 'test')
+}, 3456)
+

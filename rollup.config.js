@@ -5,6 +5,7 @@ import { uglify } from 'rollup-plugin-uglify'
 import commonjs from 'rollup-plugin-commonjs'
 import resolve from 'rollup-plugin-node-resolve'
 import livereload from 'rollup-plugin-livereload'
+import { sizeSnapshot } from "rollup-plugin-size-snapshot"
 
 const production = process.env.NODE_ENV === 'production'
 const FormatName = {
@@ -49,6 +50,7 @@ export default {
         }),
         !production && livereload({
             watch: 'server/'
-        })
+        }),
+        sizeSnapshot()
     ],
 }
