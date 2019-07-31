@@ -7,7 +7,7 @@ import resolve from 'rollup-plugin-node-resolve'
 import livereload from 'rollup-plugin-livereload'
 import { sizeSnapshot } from "rollup-plugin-size-snapshot"
 
-const production = process.env.NODE_ENV === 'production'
+const production = process.env.NODE_ENV === 'production'  
 const FormatName = {
     format: 'umd', 
     name: 'WebStorageProxy'

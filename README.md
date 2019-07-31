@@ -14,11 +14,11 @@ WebStorageProxy 做的就是把 sessionStorage/localStorage 的内容映射到�
 
 ### npm
 
-> npm i webstorage-proxy  --save
+> npm i @yinchengnuo/webstorage-proxy --save
 
 ### CDN
 
-> &lt;script src="<https://cdn.jsdelivr.net/npm/webstorage-proxy@0.0.1/dist/webstorage-proxy.min.js>"&gt;&lt;/script&gt;
+> &lt;script src="<https://cdn.jsdelivr.net/npm/@yinchengnuo/webstorage-proxy@1.0.1/dist/webstorage-proxy.min.js>"&gt;&lt;/script&gt;
 
 ----
 
