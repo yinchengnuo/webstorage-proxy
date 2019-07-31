@@ -144,19 +144,15 @@
     return typeof i === 'string';
   };
   var isFunction = function isFunction(i) {
-    //类型判断：function
     return Object.prototype.toString.call(i) === '[object Function]';
   };
   var isObject = function isObject(i) {
-    //类型判断：object
     return Object.prototype.toString.call(i) === '[object Object]';
   };
   var isArray = function isArray(i) {
-    //类型判断：array
     return Object.prototype.toString.call(i) === '[object Array]';
   };
   var isPrivate = function isPrivate(proto, key) {
-    //判断要操作的 key 值是否允许操作
     return key.split(':')[0] === proto._WEBSTORAGEPROXY_NAMESPACE || key.split(':')[0] === proto._WEBSTORAGEPROXY_INDENT_STORAGE;
   };
   var proto = function proto(i) {
@@ -164,6 +160,7 @@
     return Object.getPrototypeOf(i);
   };
   var listen = function listen(that) {
+    //监听 localStorage 变动
     window.addEventListener('storage', function (e) {
       if (that._NAMESPACE) {
         var regExp = new RegExp("".concat(that._WEBSTORAGEPROXY_NAMESPACE, ":"));
@@ -179,6 +176,13 @@
         }
       }
     });
+  };
+  var clearState = function clearState(that) {
+    proto(that)._DELETENOMAPTOSTORAGE = true;
+    Object.keys(that.state).forEach(function (e) {
+      return delete that.state[e];
+    });
+    proto(that)._DELETENOMAPTOSTORAGE = false;
   };
 
   function map () {
@@ -272,10 +276,10 @@
         //遍历传进来的对象
         if (isArray(state[e]) || isObject(state[e])) {
           //属性值是对象或数组就递归
-          state[e] = proxy(state[e]);
+          state[e] = proxy(state[e]).proxy;
         }
       });
-      return new Proxy(state, {
+      return Proxy.revocable(state, {
         //代理传进来的对象或数组
         get: function get(target, key) {
           //代理get
@@ -284,10 +288,10 @@
             return self[key];
           } else {
             //否则就是正常取值
-            callLifeCircleList(self.beforeGet, target, target, key); //遍历执行beforeGet钩子函数列表
+            callLifeCircleList(self.beforeGet, target, key); //遍历执行beforeGet钩子函数列表
 
             Promise.resolve().then(function () {
-              callLifeCircleList(self.geted, target, target, key); //遍历执行geted钩子函数列表
+              callLifeCircleList(self.geted, target, key); //遍历执行geted钩子函数列表
             });
             return target[key];
           }
@@ -304,7 +308,7 @@
           } else {
             if (target[key] !== value) {
               //当newValue !== oldValue 时才进行下一步
-              callLifeCircleList(self.beforeSet, target, target, key, value); //遍历执行beforeSet钩子函数列表
+              callLifeCircleList(self.beforeSet, target, key, value); //遍历执行beforeSet钩子函数列表
 
               var oldState = JSON.parse(JSON.stringify(self.state)); //set赋值之前先备份当前state
 
@@ -316,12 +320,13 @@
                 target[key] = value;
               }
 
-              return true;
-              callLifeCircleList(self.proxySeted, target, target, key, value); //遍历执行proxySeted钩子函数列表
+              callLifeCircleList(self.proxySeted, target, key, value); //遍历执行proxySeted钩子函数列表
 
               update.call(self, oldState, target, key, value); //更新storage
 
-              callLifeCircleList(self.storageSeted, target, target, key, value); //遍历执行storageSeted钩子函数列表
+              callLifeCircleList(self.storageSeted, target, key, value); //遍历执行storageSeted钩子函数列表
+
+              return true;
             }
           }
 
@@ -329,20 +334,20 @@
         },
         deleteProperty: function deleteProperty(target, key) {
           if (key in target && !self._DELETENOMAPTOSTORAGE) {
-            if (key === '_WEBSTORAGEPROXY_INDENT_STORAGE') {
+            if (isPrivate(key)) {
               return false;
             }
 
             var oldState = JSON.parse(JSON.stringify(self.state)); //set赋值之前先备份当前state
 
-            callLifeCircleList(self.beforeDel, target, target, key); //遍历执行beforeSet钩子函数列表
+            callLifeCircleList(self.beforeDel, target, key); //遍历执行beforeSet钩子函数列表
 
             Reflect.deleteProperty(target, key);
             callLifeCircleList(self.proxyDeled, target, target, key); //遍历执行proxySeted钩子函数列表
 
             update.call(self, oldState, target, key); //更新storage
 
-            callLifeCircleList(self.storageDeled, target, target, key); //遍历执行storageSeted钩子函数列表
+            callLifeCircleList(self.storageDeled, target, key); //遍历执行storageSeted钩子函数列表
 
             return true;
           } else if (self._DELETENOMAPTOSTORAGE) {
@@ -355,7 +360,9 @@
       });
     };
 
-    this.state = proxy(this.state);
+    var cancalProxy = proxy(this.state);
+    this.state = cancalProxy.proxy;
+    this.revoke = cancalProxy.revoke;
   }
 
   function merge (arg) {
@@ -432,18 +439,10 @@
     }, {
       key: "use",
       value: function use(namespace) {
-        var _this = this;
-
         if (namespace && namespace !== this._NAMESPACE) {
-          proto(this)._DELETENOMAPTOSTORAGE = true;
           proto(this)._NAMESPACE = namespace;
-          var keys = Object.keys(this.state);
-          keys.forEach(function (e) {
-            return delete _this.state[e];
-          });
+          clearState(this);
           map.call(this);
-          proto(this)._DELETENOMAPTOSTORAGE = false;
-          keys = null;
           return true;
         }
       }
@@ -464,7 +463,7 @@
     }, {
       key: "clear",
       value: function clear() {
-        var _this2 = this;
+        var _this = this;
 
         if (this._NAMESPACE) {
           window[this._TYPE][proto(this)._SETITEM]("".concat(this._WEBSTORAGEPROXY_NAMESPACE, ":").concat(this._NAMESPACE), '');
@@ -473,11 +472,11 @@
         }
 
         var clear = function clear(i) {
-          while (i < window[_this2._TYPE].length) {
-            if (isPrivate(proto(_this2), window[_this2._TYPE].key(i))) {
+          while (i < window[_this._TYPE].length) {
+            if (isPrivate(proto(_this), window[_this._TYPE].key(i))) {
               i++;
             } else {
-              window[_this2._TYPE].removeItem(window[_this2._TYPE].key(i));
+              window[_this._TYPE].removeItem(window[_this._TYPE].key(i));
             }
           }
 
@@ -485,6 +484,7 @@
         };
 
         clear(0)(0);
+        clearState(this);
         return true;
       }
     }, {
@@ -505,41 +505,41 @@
           }
         }
 
-        Promise.resolve().then(function () {
-          arr = null;
-          storage = null;
-          len = null;
-        });
         return arr;
+      }
+    }, {
+      key: "destroy",
+      value: function destroy(del, b) {
+        this.beforeDestroy.call(this); //执行beforeDestroy钩子函数
+
+        del && this.clear();
+
+        if (b) {
+          var p = Storage.prototype;
+          p.clear = p[this._CLEAR];
+          delete p[this._CLEAR];
+          p.setItem = p[this._SETITEM];
+          delete p[this._SETITEM];
+          p.getItem = p[this._GETITEM];
+          delete p[this._GETITEM];
+          p.removeItem = p[this._REMOVEITEM];
+          delete p[this._REMOVEITEM];
+        }
+
+        window._WebStorageProxyDestoryedFun = this.destroyed;
+        this.revoke();
+        Promise.resolve().then(function () {
+          //挂载destroyed钩子函数
+          window._WebStorageProxyDestoryedFun.call(window); //执行destroyed钩子函数
+
+
+          delete window._WebStorageProxyDestoryedFun;
+        });
       }
     }]);
 
     return WebStorageProxy;
   }();
-
-  var prototype = (function (WebStorageProxy) {
-    WebStorageProxy.prototype._CLEAR = Symbol('_CLEAR'); //原生 Storage.prototype 上的 clear 方法重新放在 Storage.prototype 上的新 key
-
-    WebStorageProxy.prototype._GETITEM = Symbol('getItem'); //原生 Storage.prototype 上的 getItem 方法重新放在 Storage.prototype 上的新 key
-
-    WebStorageProxy.prototype._SETITEM = Symbol('setItem'); //原生 Storage.prototype 上的 setItem 方法重新放在 Storage.prototype 上的新 key
-
-    WebStorageProxy.prototype._REMOVEITEM = Symbol('removeItem'); //原生 Storage.prototype 上的 removeItem 方法重新放在 Storage.prototype 上的新 key
-
-    WebStorageProxy.prototype._WEBSTORAGEPROXY_NAMESPACE = '_WEBSTORAGEPROXY_NAMESPACE'; //命名空间标记
-
-    WebStorageProxy.prototype._WEBSTORAGEPROXY_INDENT_STORAGE = '_WEBSTORAGEPROXY_INDENT_STORAGE'; //判断sessionStorage/localStorage标识的 key
-
-    WebStorageProxy.prototype._WEBSTORAGEPROXY_INDENT_LOCALSTORAGE = '_WEBSTORAGEPROXY_INDENT_LOCALSTORAGE'; //判断localStorage标识的 value
-
-    WebStorageProxy.prototype._WEBSTORAGEPROXY_INDENT_SESSIONSTORAGE = '_WEBSTORAGEPROXY_INDENT_SESSIONSTORAGE'; //判断sessionStorage标识的 value
-
-    WebStorageProxy.prototype = new Proxy(WebStorageProxy.prototype, {
-      deleteProperty: function deleteProperty() {
-        return false;
-      }
-    });
-  });
 
   function rewrite (proto) {
     localStorage.setItem(proto._WEBSTORAGEPROXY_INDENT_STORAGE, proto._WEBSTORAGEPROXY_INDENT_LOCALSTORAGE);
@@ -608,7 +608,27 @@
     };
   }
 
-  prototype(WebStorageProxy);
+  WebStorageProxy.prototype._CLEAR = Symbol('clear'); //原生 Storage.prototype 上的 clear 方法重新放在 Storage.prototype 上的新 key
+
+  WebStorageProxy.prototype._GETITEM = Symbol('getItem'); //原生 Storage.prototype 上的 getItem 方法重新放在 Storage.prototype 上的新 key
+
+  WebStorageProxy.prototype._SETITEM = Symbol('setItem'); //原生 Storage.prototype 上的 setItem 方法重新放在 Storage.prototype 上的新 key
+
+  WebStorageProxy.prototype._REMOVEITEM = Symbol('removeItem'); //原生 Storage.prototype 上的 removeItem 方法重新放在 Storage.prototype 上的新 key
+
+  WebStorageProxy.prototype._WEBSTORAGEPROXY_NAMESPACE = '_WEBSTORAGEPROXY_NAMESPACE'; //命名空间标记
+
+  WebStorageProxy.prototype._WEBSTORAGEPROXY_INDENT_STORAGE = '_WEBSTORAGEPROXY_INDENT_STORAGE'; //判断sessionStorage/localStorage标识的 key
+
+  WebStorageProxy.prototype._WEBSTORAGEPROXY_INDENT_LOCALSTORAGE = '_WEBSTORAGEPROXY_INDENT_LOCALSTORAGE'; //判断localStorage标识的 value
+
+  WebStorageProxy.prototype._WEBSTORAGEPROXY_INDENT_SESSIONSTORAGE = '_WEBSTORAGEPROXY_INDENT_SESSIONSTORAGE'; //判断sessionStorage标识的 value
+
+  WebStorageProxy.prototype = new Proxy(WebStorageProxy.prototype, {
+    deleteProperty: function deleteProperty() {
+      return false;
+    }
+  });
   var index = new Proxy(WebStorageProxy, {
     //代理 WebStorageProxy
     get: function get(target, key) {

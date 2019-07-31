@@ -89,22 +89,15 @@ export const nameSpaceCheck = (that, nameSpace) => {  //检测命名空间类型
 export const isString = i => {  //类型判断：string
     return typeof i === 'string'
 }
-export const isFunction = i => {  //类型判断：function
-    return Object.prototype.toString.call(i) === '[object Function]'
-}
-export const isObject = i => {  //类型判断：object
-    return Object.prototype.toString.call(i) === '[object Object]'
-}
-export const isArray = i => {  //类型判断：array
-    return Object.prototype.toString.call(i) === '[object Array]'
-}
-export const isPrivate = (proto, key) => {  //判断要操作的 key 值是否允许操作
-    return (key.split(':')[0] === proto._WEBSTORAGEPROXY_NAMESPACE) || (key.split(':')[0] === proto._WEBSTORAGEPROXY_INDENT_STORAGE)
-}
+export const isBoolean = i => typeof i === 'boolean'
+export const isFunction = i => Object.prototype.toString.call(i) === '[object Function]'
+export const isObject = i =>  Object.prototype.toString.call(i) === '[object Object]'
+export const isArray = i => Object.prototype.toString.call(i) === '[object Array]'
+export const isPrivate = (proto, key) => (key.split(':')[0] === proto._WEBSTORAGEPROXY_NAMESPACE) || (key.split(':')[0] === proto._WEBSTORAGEPROXY_INDENT_STORAGE)
 export const proto = i => {  //获取对象原型
     return Object.getPrototypeOf(i)
 }
-export const listen = that => {
+export const listen = that => {  //监听 localStorage 变动
     window.addEventListener('storage', e => {
         if (that._NAMESPACE) {
             let regExp = new RegExp(`${that._WEBSTORAGEPROXY_NAMESPACE}:`)
@@ -119,4 +112,9 @@ export const listen = that => {
             }
         }
     })
+}
+export const clearState = that => {
+    proto(that)._DELETENOMAPTOSTORAGE = true
+    Object.keys(that.state).forEach(e => delete that.state[e])
+    proto(that)._DELETENOMAPTOSTORAGE = false
 }

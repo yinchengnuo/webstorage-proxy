@@ -1,7 +1,7 @@
 import map from './util/map'
 import proxy from './util/proxy'
 import merge from './util/merge'
-import { listen, proto, isPrivate } from './util/util'
+import { clearState, proto, listen, isPrivate } from './util/util'
 
 export default class WebStorageProxy {  //WebStorageProxy 本尊
     constructor(...arg) {
@@ -23,13 +23,9 @@ export default class WebStorageProxy {  //WebStorageProxy 本尊
     }
     use (namespace) {
         if (namespace && namespace !== this._NAMESPACE) {
-            proto(this)._DELETENOMAPTOSTORAGE = true
             proto(this)._NAMESPACE = namespace
-            let keys = Object.keys(this.state)
-            keys.forEach(e => delete this.state[e])
+            clearState(this)
             map.call(this)
-            proto(this)._DELETENOMAPTOSTORAGE = false
-            keys = null
             return true
         }
     }
@@ -57,6 +53,7 @@ export default class WebStorageProxy {  //WebStorageProxy 本尊
             return clear
         }
         clear(0)(0)
+        clearState(this)
         return true        
     }
     namespace () {
@@ -71,12 +68,28 @@ export default class WebStorageProxy {  //WebStorageProxy 本尊
                 arr.push(window[this._TYPE].key(i).split(':')[1])
             }
         }
-        Promise.resolve().then(() => {
-            arr = null
-            storage = null
-            len = null
-        })
         return arr
+    }
+    destroy (del, b) {
+        this.beforeDestroy.call(this) //执行beforeDestroy钩子函数
+        del && this.clear()
+        if (b) {
+            let p = Storage.prototype
+            p.clear = p[this._CLEAR]
+            delete p[this._CLEAR]
+            p.setItem = p[this._SETITEM]
+            delete p[this._SETITEM]
+            p.getItem = p[this._GETITEM]
+            delete p[this._GETITEM]
+            p.removeItem = p[this._REMOVEITEM]
+            delete p[this._REMOVEITEM]
+        }
+        window._WebStorageProxyDestoryedFun = this.destroyed
+        this.revoke()
+        Promise.resolve().then(() => { //挂载destroyed钩子函数
+            window._WebStorageProxyDestoryedFun.call(window)  //执行destroyed钩子函数
+            delete window._WebStorageProxyDestoryedFun
+        })
     }
 }
 

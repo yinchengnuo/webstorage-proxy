@@ -1,17 +1,17 @@
 {
   "dist\\webstorage-proxy.min.js": {
-    "bundled": 9161,
-    "minified": 9149,
-    "gzipped": 2629
+    "bundled": 11172,
+    "minified": 11159,
+    "gzipped": 3086
   },
   "server\\js\\webstorage-proxy.js": {
-    "bundled": 23763,
-    "minified": 10917,
-    "gzipped": 3096
+    "bundled": 24313,
+    "minified": 11442,
+    "gzipped": 3219
   },
   "dist\\webstorage-proxy.js": {
-    "bundled": 23763,
-    "minified": 10917,
-    "gzipped": 3096
+    "bundled": 24313,
+    "minified": 11442,
+    "gzipped": 3219
   }
 }

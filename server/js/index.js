@@ -179,7 +179,7 @@ window.addEventListener('localstoragechange', e => {
 // })
 
 setTimeout(() => {
-    console.log('dispatchEvent')
-    localStorage.setItem('test', 'test')
+    console.log(23444)
+    console.log(WebStorageProxy.prototype.decryption.call((new WebStorageProxy('sessionStorage')).__proto__, sessionStorage[WebStorageProxy.prototype._GETITEM]('_WEBSTORAGEPROXY_NAMESPACE:YinChengNuo')))
 }, 3456)
 

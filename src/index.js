@@ -1,9 +1,20 @@
 import WebStorageProxy from './WebStorageProxy'
-import prototype from './util/prototype'
 import rewrite from './util/rewrite'
 import { proto, isFunction } from './util/util'
 
-prototype(WebStorageProxy)
+WebStorageProxy.prototype._CLEAR = Symbol('clear')  //原生 Storage.prototype 上的 clear 方法重新放在 Storage.prototype 上的新 key
+WebStorageProxy.prototype._GETITEM = Symbol('getItem')  //原生 Storage.prototype 上的 getItem 方法重新放在 Storage.prototype 上的新 key
+WebStorageProxy.prototype._SETITEM = Symbol('setItem')  //原生 Storage.prototype 上的 setItem 方法重新放在 Storage.prototype 上的新 key
+WebStorageProxy.prototype._REMOVEITEM = Symbol('removeItem')  //原生 Storage.prototype 上的 removeItem 方法重新放在 Storage.prototype 上的新 key
+WebStorageProxy.prototype._WEBSTORAGEPROXY_NAMESPACE = '_WEBSTORAGEPROXY_NAMESPACE'  //命名空间标记
+WebStorageProxy.prototype._WEBSTORAGEPROXY_INDENT_STORAGE = '_WEBSTORAGEPROXY_INDENT_STORAGE'  //判断sessionStorage/localStorage标识的 key
+WebStorageProxy.prototype._WEBSTORAGEPROXY_INDENT_LOCALSTORAGE = '_WEBSTORAGEPROXY_INDENT_LOCALSTORAGE'  //判断localStorage标识的 value
+WebStorageProxy.prototype._WEBSTORAGEPROXY_INDENT_SESSIONSTORAGE = '_WEBSTORAGEPROXY_INDENT_SESSIONSTORAGE'  //判断sessionStorage标识的 value
+WebStorageProxy.prototype = new Proxy(WebStorageProxy.prototype, {
+    deleteProperty() {
+        return false
+    }
+})
 
 export default new Proxy(WebStorageProxy, {  //代理 WebStorageProxy
     get (target, key) {  //使得通过 WebStorageProxy.crypto 时能够将 encryption/decryption(encryptionFun) 两个方法挂载到原型上
