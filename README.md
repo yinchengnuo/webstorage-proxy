@@ -173,9 +173,9 @@ const storage = new WebStorageProxy({
 })
 ```
 
-但是**beforeDestroy**、**destroyed**呢？它们何时触发呢？即，如何销毁一个 WebStorageProxy ？你可以使用 destory(bool) 方法：
+但是**beforeDestroy**、**destroyed**呢？它们何时触发呢？即，如何销毁一个 WebStorageProxy ？你可以使用 destory(del,bool) 方法：
 
-###destory(del, bool)
+### destory(del, bool)
 
 ```javascript
 const storage = new WebStorageProxy({
