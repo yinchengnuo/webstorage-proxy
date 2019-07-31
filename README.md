@@ -12,13 +12,13 @@ WebStorageProxy 做的就是把 sessionStorage/localStorage 的内容映射到�
 
 ## 安装
 
-### npm
+### Git
 
-> npm i @yinchengnuo/webstorage-proxy --save
+> git clone git@github.com:yinchengnuo/webstorage-proxy.git
 
 ### CDN
 
-> &lt;script src="<https://cdn.jsdelivr.net/npm/@yinchengnuo/webstorage-proxy@1.0.1/dist/webstorage-proxy.min.js>"&gt;&lt;/script&gt;
+> &lt;script src="<https://cdn.jsdelivr.net/npm/@yinchengnuo/webstorage-proxy@1.0.4/dist/webstorage-proxy.min.js>"&gt;&lt;/script&gt;
 
 ----
 
