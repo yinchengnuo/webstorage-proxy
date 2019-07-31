@@ -1,7 +1,7 @@
 {
   "name": "webstorage-proxy",
   "version": "1.0.0",
-  "description": "一个可以用操作对象的方式操作cookie，sessionstorage，localstorage，indexDB的JavaScript库。你可以使用它在客户端存储数据、文件、甚至你的代码片段，并且支持自定义方法对这些数据进行二进制加密。",
+  "description": "一个可以用操作对象的方式操作sessionStorage/localStorage的JavaScript库。你可以使用它在客户端存储数据，并且支持自定义方法对这些数据进行加密。主要用于监听storage变化、SPA的组件/路由之间和同域名不同页面之间的通信。",
   "main": "index.js",
   "scripts": {
     "test": "npx rollup -c --watch --environment NODE_ENV:development",
@@ -12,12 +12,10 @@
     "url": "git+https://github.com/yinchengnuo/webstorage-proxy.git"
   },
   "keywords": [
-    "cookie",
     "sessionStorage",
     "localStorage",
-    "indexDB",
     "proxy",
-    "blob"
+    "namespace"
   ],
   "author": "yinchengnuo",
   "license": "ISC",
