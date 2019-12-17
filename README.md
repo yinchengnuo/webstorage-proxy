@@ -12,6 +12,10 @@ WebStorageProxy 做的就是把 sessionStorage/localStorage 的内容映射到�
 
 ## 安装
 
+### NPM
+
+> npm i @yinchengnuo/webstorage-proxy
+
 ### Git
 
 > git clone git@github.com:yinchengnuo/webstorage-proxy.git
@@ -47,6 +51,19 @@ storage.data= {
 	skills: ['web', 'guitar']
 }
 console.log(sessionStorage.getItem('data'))  //"{"name":"yinchengnuo","age":23,"skills":["web","guitar"]}"
+```
+
+或者：
+
+```javascript
+// in main.js
+import Vue from 'vue'
+import WebstorageProxy from '@yinchengnuo/webstorage-proxy'
+
+Vue.prototype.$storage = new WebstorageProxy('sessionStorage')
+
+// in component
+this.$storage ...
 ```
 
 这样使用，在操作数组或对象类型的数据时就会很方便。

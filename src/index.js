@@ -10,11 +10,6 @@ WebStorageProxy.prototype._WEBSTORAGEPROXY_NAMESPACE = '_WEBSTORAGEPROXY_NAMESPA
 WebStorageProxy.prototype._WEBSTORAGEPROXY_INDENT_STORAGE = '_WEBSTORAGEPROXY_INDENT_STORAGE'  //判断sessionStorage/localStorage标识的 key
 WebStorageProxy.prototype._WEBSTORAGEPROXY_INDENT_LOCALSTORAGE = '_WEBSTORAGEPROXY_INDENT_LOCALSTORAGE'  //判断localStorage标识的 value
 WebStorageProxy.prototype._WEBSTORAGEPROXY_INDENT_SESSIONSTORAGE = '_WEBSTORAGEPROXY_INDENT_SESSIONSTORAGE'  //判断sessionStorage标识的 value
-WebStorageProxy.prototype = new Proxy(WebStorageProxy.prototype, {
-    deleteProperty() {
-        return false
-    }
-})
 
 export default new Proxy(WebStorageProxy, {  //代理 WebStorageProxy
     get (target, key) {  //使得通过 WebStorageProxy.crypto 时能够将 encryption/decryption(encryptionFun) 两个方法挂载到原型上
