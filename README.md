@@ -1,3 +1,5 @@
+# 已停止维护
+
 # 欢迎使用 webstorage-proxy.js
 
 webstorage-proxy.js 是一个小巧实用JavaScript工具库。你可以使用它用操作对象的方式操作sessionStorage/localStorage。你可以使用它在客户端存储数据，并且支持自定义方法对这些数据进行加密。主要用于监听 sessionStorage/localStorage 变化、SPA的组件/路由之间和同域名不同页面之间的通信。  
